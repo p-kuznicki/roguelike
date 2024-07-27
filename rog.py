@@ -10,17 +10,19 @@ from curses import wrapper
 #    curses.flash()
 
 class Terrain():
-    def __init__(self, sign, solid=False):
+    def __init__(self, name, sign, solid=False):
+        self.name = name
         self.sign = sign
         self.solid = solid
+        self.occupied = False
 
         
 class Monster():
     def __init__(self, sign):
         self.sign=sign
         
-ground = Terrain(sign='_')
-rock = Terrain(sign='#', solid=True) 
+#ground = Terrain(sign='_')
+#rock = Terrain(sign='#', solid=True) 
 kobold = Monster(sign='k')
 
 
@@ -59,27 +61,28 @@ def main(stdscr):
     mapcols = [maprow1,maprow2,maprow3,maprow4,maprow5,maprow6,maprow7,maprow8,maprow9,maprow10,maprow11,maprow12,maprow13,maprow14,maprow15,maprow16,maprow17,maprow18,maprow19,maprow20]
     for row in mapcols:
         for i in range(40):
-            row.append(['empty', rock]) if random.randint(0,3) == 0 else row.append(['empty',ground])
+ #           row.append(['empty', rock]) if random.randint(0,3) == 0 else row.append(['empty',ground])
+             row.append(Terrain(name = 'rock', sign='#', solid = True)) if random.randint(0,3) == 0 else row.append(Terrain(name = 'grass', sign='_', solid=False))
     stdscr.move(0,0)
     for row in mapcols:
         for terrain in row:
-            stdscr.addch(terrain[1].sign)
+            stdscr.addch(terrain.sign)
         stdscr.addstr('\n')
         
     for i in range(7):
         my = random.randint(0,19)
         mx = random.randint(0,39)
-        if mapcols[my][mx][1].solid == True or mapcols[my][mx][0] == 'occupied':
+        if mapcols[my][mx].solid == True or mapcols[my][mx].occupied == True:
             continue
         else:
             stdscr.move(my,mx)
             stdscr.addch(kobold.sign)
-            mapcols[my][mx][0] = 'occupied'
+            mapcols[my][mx].occupied = True
             
     while True:
         y = random.randint(0,19)
         x = random.randint(0,39)
-        if mapcols[y][x][1].solid == True:
+        if mapcols[y][x].solid == True:
             continue
         else:
             stdscr.move(y,x)
@@ -95,32 +98,32 @@ def main(stdscr):
         key = stdscr.getkey()
         if key == 'w':
             if y == 0 : continue
-            if mapcols[y-1][x][1].solid==True: continue
-            if mapcols[y-1][x][0] == 'occupied':
-                mapcols[y-1][x][0] = 'empty'
+            if mapcols[y-1][x].solid==True: continue
+            if mapcols[y-1][x].occupied == True:
+                mapcols[y-1][x].occupied = False
                 curses.beep()
                 curses.flash()
                 time.sleep(1)
                 stdscr.move(y-1,x)
-                stdscr.addch(mapcols[y-1][x][1].sign)
+                stdscr.addch(mapcols[y-1][x].sign)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x][1].sign)
+            stdscr.addch(mapcols[y][x].sign)
             y -= 1
             stdscr.move(y,x)
             stdscr.addch('@')
             stdscr.move(y,x)
         if key == 'a':
             if x == 0 : continue
-            if mapcols[y][x-1][1].solid==True: continue
-            if mapcols[y][x-1][0] == 'occupied':
-                mapcols[y][x-1][0] = 'empty'
+            if mapcols[y][x-1].solid==True: continue
+            if mapcols[y][x-1].occupied == True:
+                mapcols[y][x-1].occupied = False
                 curses.beep()
                 stdscr.move(y,x-1)
-                stdscr.addch(mapcols[y][x-1][1].sign)
+                stdscr.addch(mapcols[y][x-1].sign)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x][1].sign)
+            stdscr.addch(mapcols[y][x].sign)
             x -= 1
             stdscr.move(y,x)
             stdscr.addch('@')
@@ -129,15 +132,15 @@ def main(stdscr):
             #if y == rows -1 : continue
             
             if y == len(mapcols) -1 : continue
-            if mapcols[y+1][x][1].solid==True: continue
-            if mapcols[y+1][x][0] == 'occupied':
-                mapcols[y+1][x][0] = 'empty'
+            if mapcols[y+1][x].solid==True: continue
+            if mapcols[y+1][x].occupied == True:
+                mapcols[y+1][x].occupied = False
                 curses.beep()
                 stdscr.move(y+1,x)
-                stdscr.addch(mapcols[y+1][x][1].sign)
+                stdscr.addch(mapcols[y+1][x].sign)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x][1].sign)
+            stdscr.addch(mapcols[y][x].sign)
             y += 1
             stdscr.move(y,x)
             stdscr.addch('@')
@@ -145,15 +148,15 @@ def main(stdscr):
         if key == 'd':
             #if x == cols -1 : continue
             if x == len(maprow1) -1 : continue
-            if mapcols[y][x+1][1].solid==True: continue
-            if mapcols[y][x+1][0] == 'occupied':
-                mapcols[y][x+1][0] = 'empty'
+            if mapcols[y][x+1].solid==True: continue
+            if mapcols[y][x+1].occupied == True:
+                mapcols[y][x+1].occupied = False
                 curses.beep()
                 stdscr.move(y,x+1)
-                stdscr.addch(mapcols[y][x+1][1].sign)
+                stdscr.addch(mapcols[y][x+1].sign)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x][1].sign)
+            stdscr.addch(mapcols[y][x].sign)
             x += 1
             stdscr.move(y,x)
             stdscr.addch('@')
