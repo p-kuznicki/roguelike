@@ -18,12 +18,15 @@ class Terrain():
 
         
 class Monster():
-    def __init__(self, sign):
-        self.sign=sign
+    def __init__(self, name, sign, y, x):
+        self.name = name
+        self.sign = sign
+        self.y = y
+        self.x = x
         
 #ground = Terrain(sign='_')
 #rock = Terrain(sign='#', solid=True) 
-kobold = Monster(sign='k')
+#kobold = Monster(sign='k')
 
 
 def main(stdscr):
@@ -68,16 +71,17 @@ def main(stdscr):
         for terrain in row:
             stdscr.addch(terrain.sign)
         stdscr.addstr('\n')
-        
-    for i in range(7):
-        my = random.randint(0,19)
-        mx = random.randint(0,39)
-        if mapcols[my][mx].solid == True or mapcols[my][mx].occupied == True:
+    monsters = []
+    while len(monsters) < 7:
+        y = random.randint(0,19)
+        x = random.randint(0,39)
+        if mapcols[y][x].solid == True or mapcols[y][x].occupied == True:
             continue
         else:
-            stdscr.move(my,mx)
-            stdscr.addch(kobold.sign)
-            mapcols[my][mx].occupied = True
+            monsters.append(Monster(name='kobold', sign='k', y=y, x=x))
+            stdscr.move(y,x)
+            stdscr.addch(monsters[-1].sign)
+            mapcols[y][x].occupied = True
             
     while True:
         y = random.randint(0,19)
@@ -164,6 +168,34 @@ def main(stdscr):
 
         elif key == 'q':
             game = False
+            break
+    
+        for monster in monsters:
+            directionx = monster.x
+            if monster.x > x:
+                directionx -=1
+            if monster.x < x:
+                directionx +=1
+            directiony = monster.y
+            if monster.y > y:
+                directiony -=1
+            if monster.y < y:
+                directiony +=1
+            if mapcols[directiony][directionx].solid == True or (directiony == y and  directionx == x) or mapcols[directiony][directionx].occupied == True : continue
+            stdscr.move(monster.y, monster.x)
+            stdscr.addch(mapcols[monster.y][monster.x].sign)            
+            mapcols[monster.y][monster.x].occupied = False
+            mapcols[directiony][directionx].occupied = True
+            stdscr.move(directiony, directionx)
+            stdscr.addch(monster.sign)
+            monster.x = directionx
+            monster.y = directiony
+            stdscr.move(y,x)
+             
+ 
+            
+        
+        
 
 wrapper(main)
 
