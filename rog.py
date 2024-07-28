@@ -52,20 +52,38 @@ mapcols = [maprow1,maprow2,maprow3,maprow4,maprow5,maprow6,maprow7,maprow8,mapro
 
 
 def is_blocked (y,x):
-    return mapcols[y][x].solid or mapcols[y][x].occupied  
+   # if y > len(mapcols) or y < 0 or x > len(maprow1) or x < 0: return True
+    return y > (len(mapcols)-1) or y < 0 or x > (len(maprow1)-1) or x < 0 or mapcols[y][x].solid or mapcols[y][x].occupied
+
+
+        
+        
 
 def main(stdscr):
+    def move_random(monster):
+        directiony = monster.y + random.randint(-1,1)
+        directionx = monster.x + random.randint(-1,1)
+        if not is_blocked(directiony, directionx):
+            stdscr.move(monster.y, monster.x)
+            stdscr.addch(mapcols[monster.y][monster.x].sign)            
+            mapcols[monster.y][monster.x].occupied = False
+            mapcols[directiony][directionx].occupied = True
+            stdscr.move(directiony, directionx)
+            stdscr.addch(monster.sign)
+            monster.x = directionx
+            monster.y = directiony
+            stdscr.move(y,x)
     stdscr.clear()
+    
 #    stdscr.keypad(True)
 #    stdscr.addstr("Press F11 to play...\n")
-    
 #    while True:
-#        # Get user input
 #        key = stdscr.getch()
-         # Check if the key is F11
 #        if key == 410:
 #            break
-    #rows, cols = stdscr.getmaxyx()
+
+#rows, cols = stdscr.getmaxyx()
+
     for row in mapcols:
         for i in range(40):
  #           row.append(['empty', rock]) if random.randint(0,3) == 0 else row.append(['empty',ground])
@@ -85,7 +103,7 @@ def main(stdscr):
             monsters.append(Monster(name='kobold', sign='k', y=y, x=x))
             stdscr.move(y,x)
             stdscr.addch(monsters[-1].sign)
-            mapcols[y][x].occupied = True
+            mapcols[y][x].occupied = monsters[-1]
             
     while True:
         y = random.randint(0,19)
@@ -98,6 +116,13 @@ def main(stdscr):
             stdscr.move(y,x)
             break
             
+    def kill_monster_at(y, x):
+                monsters.remove(mapcols[y][x].occupied)
+                mapcols[y][x].occupied = False
+                curses.beep()
+                stdscr.move(y,x)
+                stdscr.addch(mapcols[y][x].sign)
+                        
 
    
     game = True
@@ -108,12 +133,7 @@ def main(stdscr):
             if y == 0 : continue
             if mapcols[y-1][x].solid: continue
             if mapcols[y-1][x].occupied:
-                mapcols[y-1][x].occupied = False
-                curses.beep()
-                curses.flash()
-                time.sleep(1)
-                stdscr.move(y-1,x)
-                stdscr.addch(mapcols[y-1][x].sign)
+                kill_monster_at(y-1, x)
                 stdscr.move(y,x)
                 continue
             stdscr.addch(mapcols[y][x].sign)
@@ -125,10 +145,7 @@ def main(stdscr):
             if x == 0 : continue
             if mapcols[y][x-1].solid: continue
             if mapcols[y][x-1].occupied:
-                mapcols[y][x-1].occupied = False
-                curses.beep()
-                stdscr.move(y,x-1)
-                stdscr.addch(mapcols[y][x-1].sign)
+                kill_monster_at(y, x-1)
                 stdscr.move(y,x)
                 continue
             stdscr.addch(mapcols[y][x].sign)
@@ -142,10 +159,7 @@ def main(stdscr):
             if y == len(mapcols) -1 : continue
             if mapcols[y+1][x].solid: continue
             if mapcols[y+1][x].occupied:
-                mapcols[y+1][x].occupied = False
-                curses.beep()
-                stdscr.move(y+1,x)
-                stdscr.addch(mapcols[y+1][x].sign)
+                kill_monster_at(y+1, x)
                 stdscr.move(y,x)
                 continue
             stdscr.addch(mapcols[y][x].sign)
@@ -158,10 +172,7 @@ def main(stdscr):
             if x == len(maprow1) -1 : continue
             if mapcols[y][x+1].solid==True: continue
             if mapcols[y][x+1].occupied:
-                mapcols[y][x+1].occupied = False
-                curses.beep()
-                stdscr.move(y,x+1)
-                stdscr.addch(mapcols[y][x+1].sign)
+                kill_monster_at(y, x+1)
                 stdscr.move(y,x)
                 continue
             stdscr.addch(mapcols[y][x].sign)
@@ -175,6 +186,9 @@ def main(stdscr):
             break
     
         for monster in monsters:
+            if abs(monster.x - x) + abs(monster.y - y) > 5:
+                move_random(monster)
+                continue
             directionx = monster.x
             if monster.x > x:
                 directionx -=1
@@ -185,25 +199,25 @@ def main(stdscr):
                 directiony -=1
             if monster.y < y:
                 directiony +=1
-            if directiony == y and  directionx == x: continue
+            if directiony == y and  directionx == x: continue			      # if tries to go into player - do nothing
             if is_blocked(directiony, directionx):
-                if x == directionx and not is_blocked(directiony, directionx+1):
+                if x == directionx and not is_blocked(directiony, directionx+1):      # if is in the same column as player and diagonal right is open, go diag-right
                     directionx +=1
-                elif x == directionx and not is_blocked(directiony, directionx-1):
+                elif x == directionx and not is_blocked(directiony, directionx-1):    # if is in the same column as player and diagonal left is open, go diag-left
                     directionx -=1
-                elif y == directiony and not is_blocked(directiony+1, directionx):
+                elif y == directiony and not is_blocked(directiony+1, directionx):    # if is in the same row as player and diagonal down is open, go diag-down
                     directiony +=1
-                elif y == directiony and not is_blocked(directiony-1, directionx):
+                elif y == directiony and not is_blocked(directiony-1, directionx):    # if is in the same row as player and diagonal up is open, go diag-up
                     directiony -=1
-                elif directionx != x and directiony !=y and not is_blocked(directiony,x):
+                elif directionx != x and directiony !=y and not is_blocked(directiony,x):  # if tries to go diagonal, and path along x axis is open go along x
                     directionx = monster.x
-                elif directionx != x and directiony !=y and not is_blocked(y,directionx):
+                elif directionx != x and directiony !=y and not is_blocked(y,directionx):  # if tries to go diagonal, and path along y axis is open go along y
                     directiony = monster.y
-                else: continue
+                else: continue								   # if non apply, do nothing	
             stdscr.move(monster.y, monster.x)
             stdscr.addch(mapcols[monster.y][monster.x].sign)            
             mapcols[monster.y][monster.x].occupied = False
-            mapcols[directiony][directionx].occupied = True
+            mapcols[directiony][directionx].occupied = monster
             stdscr.move(directiony, directionx)
             stdscr.addch(monster.sign)
             monster.x = directionx
