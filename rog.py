@@ -15,12 +15,14 @@ class Terrain():
         self.sign = sign
         self.solid = solid
         self.occupied = False
+        self.loot = False
 
         
 class Monster():
     def __init__(self, name, sign, y, x):
         self.name = name
         self.sign = sign
+        self.corpse_sign = '%'
         self.y = y
         self.x = x
         
@@ -117,11 +119,15 @@ def main(stdscr):
             break
             
     def kill_monster_at(y, x):
+                curses.beep()
+                mapcols[y][x].loot = mapcols[y][x].occupied.corpse_sign
                 monsters.remove(mapcols[y][x].occupied)
                 mapcols[y][x].occupied = False
-                curses.beep()
                 stdscr.move(y,x)
-                stdscr.addch(mapcols[y][x].sign)
+                stdscr.addch(mapcols[y][x].loot)
+                
+    def draw_ground_at(y, x):
+        stdscr.addch(mapcols[y][x].loot) if mapcols[y][x].loot else stdscr.addch(mapcols[y][x].sign)
                         
 
    
@@ -136,7 +142,7 @@ def main(stdscr):
                 kill_monster_at(y-1, x)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x].sign)
+            draw_ground_at(y,x)
             y -= 1
             stdscr.move(y,x)
             stdscr.addch('@')
@@ -148,7 +154,7 @@ def main(stdscr):
                 kill_monster_at(y, x-1)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x].sign)
+            draw_ground_at(y,x)
             x -= 1
             stdscr.move(y,x)
             stdscr.addch('@')
@@ -162,7 +168,7 @@ def main(stdscr):
                 kill_monster_at(y+1, x)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x].sign)
+            draw_ground_at(y,x)
             y += 1
             stdscr.move(y,x)
             stdscr.addch('@')
@@ -175,7 +181,7 @@ def main(stdscr):
                 kill_monster_at(y, x+1)
                 stdscr.move(y,x)
                 continue
-            stdscr.addch(mapcols[y][x].sign)
+            draw_ground_at(y,x)
             x += 1
             stdscr.move(y,x)
             stdscr.addch('@')
@@ -215,7 +221,8 @@ def main(stdscr):
                     directiony = monster.y
                 else: continue								   # if non apply, do nothing	
             stdscr.move(monster.y, monster.x)
-            stdscr.addch(mapcols[monster.y][monster.x].sign)            
+            #stdscr.addch(mapcols[monster.y][monster.x].sign)
+            draw_ground_at(monster.y, monster.x)            
             mapcols[monster.y][monster.x].occupied = False
             mapcols[directiony][directionx].occupied = monster
             stdscr.move(directiony, directionx)
