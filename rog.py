@@ -16,6 +16,7 @@ class Terrain():
         self.solid = solid
         self.occupied = False
         self.loot = False
+        
 
         
 class Monster():
@@ -25,6 +26,11 @@ class Monster():
         self.corpse_sign = '%'
         self.y = y
         self.x = x
+        
+class Item():
+     def __init__(self, name, sign):
+         self.name = name
+         self.sign = sign
         
 #ground = Terrain(sign='_')
 #rock = Terrain(sign='#', solid=True) 
@@ -52,6 +58,7 @@ maprow19 = []
 maprow20 = []
 mapcols = [maprow1,maprow2,maprow3,maprow4,maprow5,maprow6,maprow7,maprow8,maprow9,maprow10,maprow11,maprow12,maprow13,maprow14,maprow15,maprow16,maprow17,maprow18,maprow19,maprow20]
 
+inventory = []
 
 def is_blocked (y,x):
    # if y > len(mapcols) or y < 0 or x > len(maprow1) or x < 0: return True
@@ -120,14 +127,14 @@ def main(stdscr):
             
     def kill_monster_at(y, x):
                 curses.beep()
-                mapcols[y][x].loot = mapcols[y][x].occupied.corpse_sign
+                mapcols[y][x].loot = Item(name = f'{mapcols[y][x].occupied.name} corpse', sign = mapcols[y][x].occupied.corpse_sign)
                 monsters.remove(mapcols[y][x].occupied)
                 mapcols[y][x].occupied = False
                 stdscr.move(y,x)
-                stdscr.addch(mapcols[y][x].loot)
+                stdscr.addch(mapcols[y][x].loot.sign)
                 
     def draw_ground_at(y, x):
-        stdscr.addch(mapcols[y][x].loot) if mapcols[y][x].loot else stdscr.addch(mapcols[y][x].sign)
+        stdscr.addch(mapcols[y][x].loot.sign) if mapcols[y][x].loot else stdscr.addch(mapcols[y][x].sign)
                         
 
    
@@ -135,6 +142,10 @@ def main(stdscr):
     while game:
         
         key = stdscr.getkey()
+        if key == 'e' and mapcols[y][x].loot:
+            inventory.append(mapcols[y][x].loot)
+            mapcols[y][x].loot = False
+            
         if key == 'w':
             if y == 0 : continue
             if mapcols[y-1][x].solid: continue
