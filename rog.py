@@ -31,6 +31,24 @@ class Item():
      def __init__(self, name, sign):
          self.name = name
          self.sign = sign
+         
+class Player():
+    def __init__(self, y, x):
+        self.y = y
+        self.x = x
+        sign = '@'
+    def move(self, new_y, new_x):
+        if is_impassable(new_y, new_x): return
+        if mapcols[new_y][new_x].occupied:
+            kill_monster_at(new_y, new_x)
+            stdscr.move(self.y,self.x)
+            return
+        draw_ground_at(self.y,self.x)
+        self.y = new_y
+        self.x = new_x
+        stdscr.move(self.y,self.x)
+        stdscr.addch(self.sign)
+        stdscr.move(self.y,self.x)        
         
 #ground = Terrain(sign='_')
 #rock = Terrain(sign='#', solid=True) 
@@ -60,15 +78,28 @@ mapcols = [maprow1,maprow2,maprow3,maprow4,maprow5,maprow6,maprow7,maprow8,mapro
 
 inventory = []
 
+def is_impassable (y,x):
+   # if y > len(mapcols) or y < 0 or x > len(maprow1) or x < 0: return True
+    return y > (len(mapcols)-1) or y < 0 or x > (len(maprow1)-1) or x < 0 or mapcols[y][x].solid
+
 def is_blocked (y,x):
    # if y > len(mapcols) or y < 0 or x > len(maprow1) or x < 0: return True
     return y > (len(mapcols)-1) or y < 0 or x > (len(maprow1)-1) or x < 0 or mapcols[y][x].solid or mapcols[y][x].occupied
-
-
         
         
 
 def main(stdscr):
+    def kill_monster_at(y, x):
+                curses.beep()
+                mapcols[y][x].loot = Item(name = f'{mapcols[y][x].occupied.name} corpse', sign = mapcols[y][x].occupied.corpse_sign)
+                monsters.remove(mapcols[y][x].occupied)
+                mapcols[y][x].occupied = False
+                stdscr.move(y,x)
+                stdscr.addch(mapcols[y][x].loot.sign)
+                
+    def draw_ground_at(y, x):
+        stdscr.addch(mapcols[y][x].loot.sign) if mapcols[y][x].loot else stdscr.addch(mapcols[y][x].sign)    
+        
     def move_random(monster):
         directiony = monster.y + random.randint(-1,1)
         directionx = monster.x + random.randint(-1,1)
@@ -82,6 +113,7 @@ def main(stdscr):
             monster.x = directionx
             monster.y = directiony
             stdscr.move(y,x)
+    
     stdscr.clear()
     
 #    stdscr.keypad(True)
@@ -125,16 +157,7 @@ def main(stdscr):
             stdscr.move(y,x)
             break
             
-    def kill_monster_at(y, x):
-                curses.beep()
-                mapcols[y][x].loot = Item(name = f'{mapcols[y][x].occupied.name} corpse', sign = mapcols[y][x].occupied.corpse_sign)
-                monsters.remove(mapcols[y][x].occupied)
-                mapcols[y][x].occupied = False
-                stdscr.move(y,x)
-                stdscr.addch(mapcols[y][x].loot.sign)
-                
-    def draw_ground_at(y, x):
-        stdscr.addch(mapcols[y][x].loot.sign) if mapcols[y][x].loot else stdscr.addch(mapcols[y][x].sign)
+
                         
 
    
