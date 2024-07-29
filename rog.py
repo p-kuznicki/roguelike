@@ -8,16 +8,17 @@ def main(stdscr):
 ####### CLASSES AND FUNCTIONS
 ##################################
 
-    mapcols = []
-    for i in range(20):
-        mapcols.append([])
-
-    def is_solid (y,x):
+    def is_impassable (y,x):
         return y > (len(mapcols)-1) or y < 0 or x > (len(mapcols[0])-1) or x < 0 or mapcols[y][x].solid
 
     def is_blocked (y,x):
           return y > (len(mapcols)-1) or y < 0 or x > (len(mapcols[0])-1) or x < 0 or mapcols[y][x].solid or mapcols[y][x].occupied
+                     
+    def draw_ground_at(y, x):
+        stdscr.addch(mapcols[y][x].loot.sign) if mapcols[y][x].loot else stdscr.addch(mapcols[y][x].sign)
 
+
+    
     class Terrain():
         def __init__(self, name, sign, solid=False):
             self.name = name
@@ -25,11 +26,15 @@ def main(stdscr):
             self.solid = solid
             self.occupied = False
             self.loot = False
+
+
         
     class Item():
          def __init__(self, name, sign):
              self.name = name
              self.sign = sign
+
+
 
     class Monster():
         def __init__(self, name, sign, y, x):
@@ -44,8 +49,9 @@ def main(stdscr):
             stdscr.addch(mapcols[self.y][self.x].sign)            
             mapcols[self.y][self.x].occupied = False
             mapcols[directiony][directionx].occupied = self
-            stdscr.move(directiony, directionx)
-            stdscr.addch(self.sign)
+            if abs(self.x - player.x) + abs(self.y - player.y) < 13:
+                stdscr.move(directiony, directionx)
+                stdscr.addch(self.sign)
             self.x = directionx
             self.y = directiony
             stdscr.move(player.y,player.x)
@@ -62,28 +68,27 @@ def main(stdscr):
             directiony = self.y                         # assume monster is on the same column as player
             if self.y > player.y: directiony -=1        # if player is on earlier column adjust direction by -1
             if self.y < player.y: directiony +=1        # if player is on later column adjust direction by +1
-            if directiony == player.y and  directionx == player.x: return	    # if tries to go into player - do nothing
-            if is_blocked(directiony, directionx):
+            if directiony == player.y and  directionx == player.x: return	    	# if tries to go into player - do nothing
+            if is_blocked(directiony, directionx):					# if direct path blocked try other:
                 if player.x == directionx and not is_blocked(directiony, directionx+1): directionx +=1          # if is in the same column as player and diagonal right is open, go diag-right   
                 elif player.x == directionx and not is_blocked(directiony, directionx-1): directionx -=1        # if is in the same column as player and diagonal left is open, go diag-left
                 elif player.y == directiony and not is_blocked(directiony+1, directionx): directiony +=1        # if is in the same row as player and diagonal down is open, go diag-down
                 elif player.y == directiony and not is_blocked(directiony-1, directionx): directiony -=1        # if is in the same row as player and diagonal up is open, go diag-up
                 elif directionx != player.x and directiony !=player.y and not is_blocked(directiony,x): directionx = self.x # if tries to go diagonal, and path along x axis is open go along x
                 elif directionx != player.x and directiony !=player.y and not is_blocked(y,directionx): directiony = self.y # if tries to go diagonal, and path along y axis is open go along y
-                else: return								                                                    # if non apply, do nothing	
+                else: return								                                    # if non apply, do nothing	
             self.complete_movement(directiony, directionx)
+            
+        def die(self):
+            curses.beep()
+            mapcols[self.y][self.x].loot = Item(name = 'corpse', sign = self.corpse_sign)
+            monsters.remove(self)
+            mapcols[self.y][self.x].occupied = False
+            stdscr.move(self.y,self.x)
+            stdscr.addch(mapcols[self.y][self.x].loot.sign) 
 
-    def kill_monster_at(y, x):
-                curses.beep()
-                mapcols[y][x].loot = Item(name = 'corpse', sign = mapcols[y][x].occupied.corpse_sign)
-                monsters.remove(mapcols[y][x].occupied)
-                mapcols[y][x].occupied = False
-                stdscr.move(y,x)
-                stdscr.addch(mapcols[y][x].loot.sign)
-                
-    def draw_ground_at(y, x):
-        stdscr.addch(mapcols[y][x].loot.sign) if mapcols[y][x].loot else stdscr.addch(mapcols[y][x].sign)
-    
+
+
     class Player():
         def __init__(self, y, x):
             self.y = y
@@ -93,9 +98,9 @@ def main(stdscr):
         def move(self, modifier_y, modifier_x):
             new_y = self.y + modifier_y
             new_x = self.x + modifier_x
-            if is_solid(new_y, new_x): return
+            if is_impassable(new_y, new_x): return
             if mapcols[new_y][new_x].occupied:
-                kill_monster_at(new_y, new_x)
+                mapcols[new_y][new_x].occupied.die()
                 stdscr.move(self.y,self.x)
                 return
             draw_ground_at(self.y,self.x)
@@ -108,44 +113,52 @@ def main(stdscr):
             self.inventory.append(mapcols[self.y][self.x].loot)
             mapcols[self.y][self.x].loot = False
 
+
 ####################################
 #### MAP SETUP
 ####################################
 
+
     stdscr.clear()
     
-    for row in mapcols:         # generate map
+    mapcols = []		# generate map
+    for i in range(20):
+        mapcols.append([])
+    
+    for row in mapcols:         
         for i in range(40):
-             row.append(Terrain(name = 'rock', sign='#', solid = True)) if random.randint(0,3) == 0 else row.append(Terrain(name = 'grass', sign='_', solid=False))
+             row.append(Terrain(name = 'rock', sign='#', solid = True)) if random.randint(0,3) == 0 else row.append(Terrain(name = 'grass', sign='_'))
     stdscr.move(0,0)
     
     for row in mapcols:         # print map
         for terrain in row:
             stdscr.addch(terrain.sign)
         stdscr.addch('\n')
-        
-    monsters = []               # generate monsters
-    while len(monsters) < 7:
-        y = random.randint(0,19)
-        x = random.randint(0,39)
-        if mapcols[y][x].solid == True or mapcols[y][x].occupied == True: continue
-        else:
-            monsters.append(Monster(name='kobold', sign='k', y=y, x=x))
-            stdscr.move(y,x)
-            stdscr.addch(monsters[-1].sign)
-            mapcols[y][x].occupied = monsters[-1]
+
             
     while True:                 # generate player
         y = random.randint(0,19)
         x = random.randint(0,39)
-        if mapcols[y][x].solid == True:
-            continue
+        if mapcols[y][x].solid or mapcols[y][x].occupied: continue
         else:
             player = Player(y,x)
             stdscr.move(player.y, player.x)
             stdscr.addch(player.sign)
             stdscr.move(player.y,player.x)
             break
+        
+    monsters = []               # generate monsters
+    while len(monsters) < 7:
+        y = random.randint(0,19)
+        x = random.randint(0,39)
+        if mapcols[y][x].solid or mapcols[y][x].occupied: continue
+        else:
+            monsters.append(Monster(name='kobold', sign='k', y=y, x=x))
+            if abs(monsters[-1].x - player.x) + abs(monsters[-1].y - player.y) < 13:
+                stdscr.move(y,x)
+                stdscr.addch(monsters[-1].sign)
+            mapcols[y][x].occupied = monsters[-1]
+
             
 
 #######################################                        
@@ -171,4 +184,3 @@ def main(stdscr):
             else: monster.get_closer()
        
 wrapper(main)
-
