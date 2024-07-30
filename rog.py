@@ -13,7 +13,16 @@ def main(stdscr):
 
     def is_blocked (y,x):
         return is_beyond_map(y,x) or mapcols[y][x].solid or mapcols[y][x].occupied
-    
+        
+    def print_map():
+        stdscr.move(0,0)
+        for row in mapcols:         # print map
+            for terrain in row:
+                #if not terrain.discovered: stdscr.addch(' ')
+                if terrain.occupied: stdscr.addch(terrain.occupied.sign)
+                elif terrain.loot: stdscr.addch(terrain.loot.sign)
+                else: stdscr.addch(terrain.sign)
+            stdscr.addch('\n')
     
     
     class Terrain():
@@ -50,12 +59,9 @@ def main(stdscr):
                 stdscr.move(y, x)
                 stdscr.addch(self.sign)
         
-        def complete_movement(self, directiony, directionx):
-            stdscr.move(self.y, self.x)
-            mapcols[self.y][self.x].draw_ground()            
+        def complete_movement(self, directiony, directionx):          
             mapcols[self.y][self.x].occupied = False
             mapcols[directiony][directionx].occupied = self
-            self.draw_if_visible(directiony, directionx)
             self.x = directionx
             self.y = directiony
             
@@ -89,8 +95,7 @@ def main(stdscr):
             mapcols[self.y][self.x].loot = Item(name = 'corpse', sign = self.corpse_sign)
             monsters.remove(self)
             mapcols[self.y][self.x].occupied = False
-            stdscr.move(self.y,self.x)
-            stdscr.addch(mapcols[self.y][self.x].loot.sign) 
+
 
 
 
@@ -109,11 +114,10 @@ def main(stdscr):
             if mapcols[new_y][new_x].occupied:
                 mapcols[new_y][new_x].occupied.die()
                 return
-            mapcols[self.y][self.x].draw_ground()
+            mapcols[self.y][self.x].occupied = False
             self.y = new_y
             self.x = new_x
-            stdscr.move(self.y,self.x)
-            stdscr.addch(self.sign)
+            mapcols[self.y][self.x].occupied = self
             
         def get_loot(self):
             self.inventory.append(mapcols[self.y][self.x].loot)
@@ -128,29 +132,22 @@ def main(stdscr):
     stdscr.clear()
     
     mapcols = []		# generate map
-    for i in range(25):
+    for i in range(20):
         mapcols.append([])
     
     for row in mapcols:         
-        for i in range(60):
+        for i in range(40):
              row.append(Terrain(name = 'rock', sign='#', solid = True)) if random.randint(0,3) == 0 else row.append(Terrain(name = 'grass', sign='_'))
     stdscr.move(0,0)
     
-    for row in mapcols:         # print map
-        for terrain in row:
-            stdscr.addch(terrain.sign)
-        stdscr.addch('\n')
 
-            
     while True:                 # generate player and print
         y = random.randint(0,19)
         x = random.randint(0,39)
         if mapcols[y][x].solid or mapcols[y][x].occupied: continue
         else:
             player = Player(y,x)
-            stdscr.move(player.y, player.x)
-            stdscr.addch(player.sign)
-            #stdscr.move(player.y,player.x)
+            mapcols[y][x].occupied = player
             break
         
     monsters = []               # generate monsters and print if visible
@@ -160,8 +157,7 @@ def main(stdscr):
         if mapcols[y][x].solid or mapcols[y][x].occupied: continue
         else:
             monsters.append(Monster(name='kobold', sign='k', y=y, x=x))
-            mapcols[y][x].occupied = monsters[-1]
-            monsters[-1].draw_if_visible(y, x)               
+            mapcols[y][x].occupied = monsters[-1]           
             
       
 #######################################                        
@@ -172,6 +168,8 @@ def main(stdscr):
     
     while game:
     
+        print_map()
+        
         stdscr.move(player.y, player.x) 	# center cursor on player
         
         key = stdscr.getkey()
