@@ -14,15 +14,104 @@ def main(stdscr):
     def is_blocked (y,x):
         return is_beyond_map(y,x) or mapcols[y][x].solid or mapcols[y][x].occupied
         
+    def visible (y,x):
+        return abs(x - player.x) + abs(y - player.y) < 9
+        
+    def make_visible(y,x):
+        mapcols[y][x].discovered = True
+        mapcols[y][x].visible = True
+    
+########################################    
+    def check_visibility():
+    
+        for row in mapcols:         # reset visibility in the whole map            
+            for terrain in row: terrain.visible = False
+            
+        for y in range(player.y-1, player.y+2):             # make terrain around player visible 
+            for x in range(player.x-1, player.x+2):
+                if not is_beyond_map(y,x): make_visible(y,x)
+        
+        for y in range(player.y+2, player.y+5):             # make terrain down visible
+            if not is_beyond_map(y, player.x) and not mapcols[y-1][player.x].solid: make_visible(y,player.x)
+            else: break
+            
+        for y in range(player.y-2, player.y-5, -1):         # make terrain up visible
+            if not is_beyond_map(y, player.x) and not mapcols[y+1][player.x].solid: make_visible(y,player.x)
+            else: break
+            
+        for x in range(player.x-2, player.x-5, -1):         # make terrain left visible
+            if not is_beyond_map(player.y, x) and not mapcols[player.y][x+1].solid: make_visible(player.y,x)
+            else: break
+            
+        for x in range(player.x+2, player.x+5):             # make terrain right visible
+            if not is_beyond_map(player.y,x) and not mapcols[player.y][x-1].solid: make_visible(player.y,x)
+            else: break
+            
+######################################### diagonals
+
+        for i in range(1, 3):
+            if not is_beyond_map(player.y+i+1, player.x+i+1) and not mapcols[player.y+i][player.x+i].solid: make_visible(player.y+i, player.x+i)
+            else: break
+            
+        for i in range(1, 3):
+            if not is_beyond_map(player.y-i-1, player.x+i+1) and not mapcols[player.y-i][player.x+i].solid: make_visible(player.y-i, player.x+i)
+            else: break
+            
+        for i in range(1, 3):
+            if not is_beyond_map(player.y-i-1, player.x-i-1) and not mapcols[player.y-i][player.x-i].solid: make_visible(player.y-i, player.x-i)
+            else: break
+            
+        for i in range(1, 3):
+            if not is_beyond_map(player.y+i+1, player.x-i-1) and not mapcols[player.y+i][player.x-i].solid: make_visible(player.y+i, player.x-i)
+            else: break
+             
+##############################        misc
+
+        if not is_beyond_map(player.y+2,player.x+1) and (not mapcols[player.y+1][player.x].solid or not mapcols[player.y+1][player.x+1].solid):
+            make_visible(player.y+2, player.x+1)
+            if not mapcols[player.y+2][player.x+1].solid and not is_beyond_map(player.y+3, player.x+1): make_visible(player.y+3, player.x+1)
+        
+        if not is_beyond_map(player.y+1,player.x+2) and (not mapcols[player.y][player.x+1].solid or not mapcols[player.y+1][player.x+1].solid):
+            make_visible(player.y+1, player.x+2)
+            if not mapcols[player.y+1][player.x+2].solid and not is_beyond_map(player.y+1, player.x+3): make_visible(player.y+1, player.x+3)
+            
+        if not is_beyond_map(player.y-1,player.x+2) and (not mapcols[player.y][player.x+1].solid or not mapcols[player.y+1][player.x+1].solid):
+            make_visible(player.y-1, player.x+2)
+            if not mapcols[player.y-1][player.x+2].solid and not is_beyond_map(player.y-1, player.x+3): make_visible(player.y-1, player.x+3)
+            
+        if not is_beyond_map(player.y-2,player.x+1) and (not mapcols[player.y-1][player.x].solid or not mapcols[player.y-1][player.x+1].solid):
+            make_visible(player.y-2, player.x+1)
+            if not mapcols[player.y-2][player.x+1].solid and not is_beyond_map(player.y-3, player.x+1): make_visible(player.y-3, player.x+1)
+
+        if not is_beyond_map(player.y-2,player.x-1) and (not mapcols[player.y-1][player.x-1].solid or not mapcols[player.y-1][player.x].solid):
+            make_visible(player.y-2, player.x-1)
+            if not mapcols[player.y-2][player.x-1].solid and not is_beyond_map(player.y-3, player.x-1): make_visible(player.y-3, player.x-1)
+        
+        if not is_beyond_map(player.y-1,player.x-2) and (not mapcols[player.y-1][player.x-1].solid or not mapcols[player.y][player.x-1].solid):
+            make_visible(player.y-1, player.x-2)
+            if not mapcols[player.y-1][player.x-2].solid and not is_beyond_map(player.y-1, player.x-3): make_visible(player.y-1, player.x-3)
+
+        if not is_beyond_map(player.y+1,player.x-2) and (not mapcols[player.y+1][player.x-1].solid or not mapcols[player.y][player.x-1].solid):
+            make_visible(player.y+1, player.x-2)
+            if not mapcols[player.y+1][player.x-2].solid and not is_beyond_map(player.y+1, player.x-3): make_visible(player.y+1, player.x-3)
+
+        if not is_beyond_map(player.y+2,player.x-1) and (not mapcols[player.y+1][player.x-1].solid or not mapcols[player.y+1][player.x].solid):
+            make_visible(player.y+2, player.x-1)
+            if not mapcols[player.y+2][player.x-1].solid and not is_beyond_map(player.y+3, player.x-1): make_visible(player.y+3, player.x-1)
+            
+#################################  
+
     def print_map():
         stdscr.move(0,0)
-        for row in mapcols:         # print map
+        for y, row in enumerate(mapcols):         # print map
             for terrain in row:
-                #if not terrain.discovered: stdscr.addch(' ')
-                if terrain.occupied: stdscr.addch(terrain.occupied.sign)
-                elif terrain.loot: stdscr.addch(terrain.loot.sign)
-                else: stdscr.addch(terrain.sign)
-            stdscr.addch('\n')
+                if not terrain.discovered: stdscr.addch(' ')
+                elif terrain.visible and terrain.occupied: stdscr.addch(terrain.occupied.sign)
+                elif terrain.visible and terrain.loot: stdscr.addch(terrain.loot.sign)
+                else:
+                    if terrain.name == 'grass': stdscr.addch(terrain.sign, curses.color_pair(1))
+                    elif terrain.name == 'rock': stdscr.addch(terrain.sign)
+            stdscr.move(y+1,0)
     
     
     class Terrain():
@@ -31,6 +120,8 @@ def main(stdscr):
             self.name = name
             self.sign = sign
             self.solid = solid
+            self.discovered = False
+            self.visible = False
             self.occupied = False
             self.loot = False
             
@@ -137,7 +228,7 @@ def main(stdscr):
     
     for row in mapcols:         
         for i in range(40):
-             row.append(Terrain(name = 'rock', sign='#', solid = True)) if random.randint(0,3) == 0 else row.append(Terrain(name = 'grass', sign='_'))
+             row.append(Terrain(name = 'rock', sign='#', solid = True)) if random.randint(0,3) == 0 else row.append(Terrain(name = 'grass', sign='\"'))
     stdscr.move(0,0)
     
 
@@ -163,10 +254,16 @@ def main(stdscr):
 #######################################                        
 #####  MAIN GAME LOOP
 #######################################
-
+    
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    
     game = True
     
     while game:
+    
+        check_visibility()
     
         print_map()
         
@@ -183,7 +280,7 @@ def main(stdscr):
             break
     
         for monster in monsters:
-            if abs(monster.x - player.x) + abs(monster.y - player.y) > 5: monster.move_random()
+            if abs(monster.x - player.x) + abs(monster.y - player.y) > 3: monster.move_random()
             else: monster.get_closer()
        
 wrapper(main)
