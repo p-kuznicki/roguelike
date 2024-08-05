@@ -1,13 +1,10 @@
 import math
 
-class Visual():
+class Sight():
 	def __init__(self, N = 12, R = 6):
 		self.N = N 	# number of rays in a quadrant
 		self.R = R 	# viewing range
 		self.degrees = 90 / self.N
-		
-
-	def create_rays(self):
 		rays=[]
 		for i in range(self.N+1):
 			tan = math.tan(i*(math.pi*self.degrees/180))	
@@ -33,4 +30,5 @@ class Visual():
 			rays3.append([[-r[0], -r[1]] for r in ray])
 
 		rays = rays + rays1 + rays2 + rays3
-		return rays
+		
+		self.rays = rays
