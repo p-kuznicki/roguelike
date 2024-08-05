@@ -2,72 +2,17 @@ import curses
 import random
 import math
 from curses import wrapper
-
-
-##################### RAY CREATION
-
-import math
+from fov_algo import Visual
 
 TERRAIN_DENSITY = 3
 
-def angle_to_tangens(degrees):
-	angle_in_radians = math.pi*degrees/180
-	tangens = math.tan(angle_in_radians)
-	return tangens
+####### RAY CREATION
 
-#8,9  /  12, 6
+visual = Visual(N=12, R=6)
 
-N =12	#number of rays
-R = 6	#range of line of sight
+rays = visual.create_rays()
 
-degrees = 90 / N 	
-
-
-tan_set = []
-for i in range(N+1):
-	tan_set.append(angle_to_tangens(degrees*i))
-#print(tan_set)
-
-rays = []
-
-for r, tan in enumerate(tan_set):
-	y = R / math.sqrt(1 + tan*tan)
-	x = y*tan
-	#print(int(x),int(y), "a to ich wspołrzedne cząstokowe")
-	rays.append([])
-	for px in range(int(x)):
-		py = int(px/tan)
-		rays[r].append([py, px])
-	for py in range(int(y)):
-		px = int(py*tan)
-		rays[r].append([py, px])
-	rays[r] = sorted(rays[r], key=lambda x: sum(x))
-#	print(rays[r])
-
-#lists_to_remove = [[0, 0], [1, 0], [0, 1], [1, 1]]
-lists_to_remove = [[0, 0]]
-
-
-# Filter out the unwanted lists
-rays = [[r for r in ray if r not in lists_to_remove] for ray in rays]
-
-rays1 = []
-rays2 = []
-rays3 = []
-
-for ray in rays:
-	ray1 = [[-r[0], r[1]] for r in ray]
-	rays1.append(ray1)
-for ray in rays:
-	ray1 = [[r[0], -r[1]] for r in ray]
-	rays2.append(ray1)
-for ray in rays:
-	ray1 = [[-r[0], -r[1]] for r in ray]
-	rays3.append(ray1)
-
-rays = rays + rays1 + rays2 + rays3
-
-######################### END OF RAYS
+#######
 
 def main(stdscr):
 
@@ -87,8 +32,6 @@ def main(stdscr):
     def make_visible(y,x):
         mapcols[y][x].discovered = True
         mapcols[y][x].visible = True
-    
-########################################
 
     def check_visibility():
     
@@ -104,86 +47,7 @@ def main(stdscr):
                 if not is_beyond_map(ray[i][0]+player.y,ray[i][1]+player.x) and not mapcols[ray[i-1][0]+player.y][ray[i-1][1]+player.x].solid:
     	            make_visible(ray[i][0]+player.y,ray[i][1]+player.x)
                 else: break    
-
-    
-    def check_visibility_old():
-    
-        for row in mapcols:         # reset visibility in the whole map            
-            for terrain in row: terrain.visible = False
-            
-        for y in range(player.y-1, player.y+2):             # make terrain around player visible 
-            for x in range(player.x-1, player.x+2):
-                if not is_beyond_map(y,x): make_visible(y,x)
-        
-        for y in range(player.y+2, player.y+5):             # make terrain down visible
-            if not is_beyond_map(y, player.x) and not mapcols[y-1][player.x].solid: make_visible(y,player.x)
-            else: break
-            
-        for y in range(player.y-2, player.y-5, -1):         # make terrain up visible
-            if not is_beyond_map(y, player.x) and not mapcols[y+1][player.x].solid: make_visible(y,player.x)
-            else: break
-            
-        for x in range(player.x-2, player.x-5, -1):         # make terrain left visible
-            if not is_beyond_map(player.y, x) and not mapcols[player.y][x+1].solid: make_visible(player.y,x)
-            else: break
-            
-        for x in range(player.x+2, player.x+5):             # make terrain right visible
-            if not is_beyond_map(player.y,x) and not mapcols[player.y][x-1].solid: make_visible(player.y,x)
-            else: break
-            
-######################################### diagonals
-
-        for i in range(1, 3):
-            if not is_beyond_map(player.y+i+1, player.x+i+1) and not mapcols[player.y+i][player.x+i].solid: make_visible(player.y+i, player.x+i)
-            else: break
-            
-        for i in range(1, 3):
-            if not is_beyond_map(player.y-i-1, player.x+i+1) and not mapcols[player.y-i][player.x+i].solid: make_visible(player.y-i, player.x+i)
-            else: break
-            
-        for i in range(1, 3):
-            if not is_beyond_map(player.y-i-1, player.x-i-1) and not mapcols[player.y-i][player.x-i].solid: make_visible(player.y-i, player.x-i)
-            else: break
-            
-        for i in range(1, 3):
-            if not is_beyond_map(player.y+i+1, player.x-i-1) and not mapcols[player.y+i][player.x-i].solid: make_visible(player.y+i, player.x-i)
-            else: break
-             
-##############################        misc
-
-        if not is_beyond_map(player.y+2,player.x+1) and (not mapcols[player.y+1][player.x].solid or not mapcols[player.y+1][player.x+1].solid):
-            make_visible(player.y+2, player.x+1)
-            if not mapcols[player.y+2][player.x+1].solid and not is_beyond_map(player.y+3, player.x+1): make_visible(player.y+3, player.x+1)
-        
-        if not is_beyond_map(player.y+1,player.x+2) and (not mapcols[player.y][player.x+1].solid or not mapcols[player.y+1][player.x+1].solid):
-            make_visible(player.y+1, player.x+2)
-            if not mapcols[player.y+1][player.x+2].solid and not is_beyond_map(player.y+1, player.x+3): make_visible(player.y+1, player.x+3)
-            
-        if not is_beyond_map(player.y-1,player.x+2) and (not mapcols[player.y][player.x+1].solid or not mapcols[player.y+1][player.x+1].solid):
-            make_visible(player.y-1, player.x+2)
-            if not mapcols[player.y-1][player.x+2].solid and not is_beyond_map(player.y-1, player.x+3): make_visible(player.y-1, player.x+3)
-            
-        if not is_beyond_map(player.y-2,player.x+1) and (not mapcols[player.y-1][player.x].solid or not mapcols[player.y-1][player.x+1].solid):
-            make_visible(player.y-2, player.x+1)
-            if not mapcols[player.y-2][player.x+1].solid and not is_beyond_map(player.y-3, player.x+1): make_visible(player.y-3, player.x+1)
-
-        if not is_beyond_map(player.y-2,player.x-1) and (not mapcols[player.y-1][player.x-1].solid or not mapcols[player.y-1][player.x].solid):
-            make_visible(player.y-2, player.x-1)
-            if not mapcols[player.y-2][player.x-1].solid and not is_beyond_map(player.y-3, player.x-1): make_visible(player.y-3, player.x-1)
-        
-        if not is_beyond_map(player.y-1,player.x-2) and (not mapcols[player.y-1][player.x-1].solid or not mapcols[player.y][player.x-1].solid):
-            make_visible(player.y-1, player.x-2)
-            if not mapcols[player.y-1][player.x-2].solid and not is_beyond_map(player.y-1, player.x-3): make_visible(player.y-1, player.x-3)
-
-        if not is_beyond_map(player.y+1,player.x-2) and (not mapcols[player.y+1][player.x-1].solid or not mapcols[player.y][player.x-1].solid):
-            make_visible(player.y+1, player.x-2)
-            if not mapcols[player.y+1][player.x-2].solid and not is_beyond_map(player.y+1, player.x-3): make_visible(player.y+1, player.x-3)
-
-        if not is_beyond_map(player.y+2,player.x-1) and (not mapcols[player.y+1][player.x-1].solid or not mapcols[player.y+1][player.x].solid):
-            make_visible(player.y+2, player.x-1)
-            if not mapcols[player.y+2][player.x-1].solid and not is_beyond_map(player.y+3, player.x-1): make_visible(player.y+3, player.x-1)
-            
-#################################  
+ 
 
     def print_map():
         stdscr.move(0,0)
