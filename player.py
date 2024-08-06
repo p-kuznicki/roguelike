@@ -15,8 +15,8 @@ class Player():
         nx = self.x + x
         if level.is_beyond_map(ny,nx) or level.map[ny][nx].solid: return
         elif level.map[ny][nx].occupied:
-            #level.map[ny][nx].occupied.die(level)
-            level.remove_monster(level.map[ny][nx].occupied)
+            level.map[ny][nx].occupied.die(level)
+            #level.remove_monster(level.map[ny][nx].occupied)
         else: 
             level.map[self.y][self.x].occupied = False
             self.y = ny

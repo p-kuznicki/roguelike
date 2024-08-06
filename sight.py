@@ -1,9 +1,9 @@
 import math
 
 class Sight():
-	def __init__(self, N = 12, R = 6):
-		self.N = N 	# number of rays in a quadrant
-		self.R = R 	# viewing range
+	def __init__(self, rays_density = 12, sight_range = 6):
+		self.N = rays_density 	# number of rays in a quadrant
+		self.R = sight_range
 		self.degrees = 90 / self.N
 		rays=[]
 		for i in range(self.N+1):

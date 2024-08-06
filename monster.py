@@ -1,4 +1,5 @@
 import random, curses
+from item import Item
 
 class Monster():
     def __init__(self, name, sign):
@@ -7,14 +8,14 @@ class Monster():
         self.y = None
         self.x = None
         
-    #def die(self, level):
-    #        curses.beep()
-    #        level.map[self.y][self.x].loot = Item(name='corpse', sign='%')
-    #        level.monsters.remove(self)
-    #        level.map[self.y][self.x].occupied = False
+    def die(self, level):
+            curses.beep()
+            level.map[self.y][self.x].loot = Item(name='corpse', sign='%')
+            level.monsters.remove(self)
+            level.map[self.y][self.x].occupied = False
         
-    def do_something(self, level, player):
-            if abs(self.x - player.x) + abs(self.y - player.y) > 3: self.move_random(level)
+    def choose_action(self, level, player):
+            if abs(self.x - player.x) + abs(self.y - player.y) > 4: self.move_random(level)
             else: self.move_closer(level, player)
 
     def complete_movement(self, level, ny, nx):          
@@ -30,15 +31,15 @@ class Monster():
             
     def move_closer(self, level, player):
             nx = self.x                         # create direction and assume monster is on the same row as player
-            if self.x > player.x: nx -=1        # if player is on earlier row adjust nx by x-1
-            elif self.x < player.x: nx +=1      # if player is on later row adjust n by x+1
+            if self.x > player.x: nx -=1        # if player has lower x adjust nx by x-1
+            elif self.x < player.x: nx +=1      # if player has higher x adjust nx by x+1
             ny = self.y                 	# create direction and assume monster is on the same column as player
-            if self.y > player.y: ny -=1        # if player is on earlier column adjust n by y-1
-            elif self.y < player.y: ny +=1      # if player is on later column adjust n by y+1
+            if self.y > player.y: ny -=1        # if player has lower y adjust ny by y-1
+            elif self.y < player.y: ny +=1      # if player has higher y adjust ny by y+1
             
             if ny == player.y and  nx == player.x: return   	# if tries to go into player - do nothing... for now ]:->
             
-            if level.is_space_unavaible(ny, nx):					# if direct path space_unavaible try other:
+            if level.is_space_unavaible(ny, nx):					# if direct path unavaible try other:
                 if player.x == nx and not level.is_space_unavaible(ny, nx+1): nx +=1          # if is in the same column as player and diagonal right is open, go diag-right   
                 elif player.x == nx and not level.is_space_unavaible(ny, nx-1): nx -=1        # if is in the same column as player and diagonal left is open, go diag-left
                 elif player.y == ny and not level.is_space_unavaible(ny+1, nx): ny +=1        # if is in the same row as player and diagonal down is open, go diag-down
