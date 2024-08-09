@@ -19,26 +19,21 @@ def main(stdscr):
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     
     level = Level('random level', height=min_height-6, width=min_width)
-    level.generate_monsters()
     
     player = Player('Johnny', 80, 8, 20, 25)
     level.random_place(player)
     
     sight = Sight(rays_density=12, sight_range=8)
-    
-    level.check_visibility(sight.rays, player)
-    level.draw(map_win)
+
+    level.draw_all(sight.rays, player, map_win)
     draw_info(text_win, player)
     
     level_loop = True
     
     while level_loop:
-        
-      
+              
         map_win.move(player.y,player.x) # move cursor to player position
 
-        #stdscr.refresh()
-        
         key = map_win.getkey()
         if key == 'q':
             level_loop = False
@@ -53,7 +48,7 @@ def main(stdscr):
               
         for monster in level.monsters:
             level.hide_this(monster, map_win)
-            monster.choose_action(level, player) 
+            monster.action(level, player) 
             
         level.draw_visible(sight.rays, player, map_win)
         draw_info(text_win, player)  

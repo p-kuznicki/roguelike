@@ -16,7 +16,7 @@ class Monster():
             level.monsters.remove(self)
             level.map[self.y][self.x].occupied = False
         
-    def choose_action(self, level, player):
+    def action(self, level, player):
             if abs(self.x - player.x) + abs(self.y - player.y) > 4: self.move_random(level)
             else: self.move_closer(level, player)
 

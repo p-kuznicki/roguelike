@@ -17,27 +17,29 @@ class Level():
         self.monsters = []
         self.items = []
         
-        for y in range(height):
+        for y in range(height):   # generate map
             self.map.append([])
             for x in range(width):
                 if random.randint(1,100) <= self.density: self.map[y].append(Rock())
                 elif random.randint(0,3) == 0: self.map[y].append(Tree())
                 else: self.map[y].append(Grass())
+                
+        for i in range(self.width//2):   # generate monsters
+            monster = Monster(name='kobold', sign='k')
+            self.monsters.append(monster)
+            self.random_place(monster)
                     
-    
-    def hide_this(self, obj, map_win):
-        y, x = obj.y, obj.x
-        if self.map[y][x].visible:  #dissapear visible element
-            map_win.addch(y,x,self.map[y][x].sign,self.map[y][x].color)
-                    
+
+               
     def draw_single(self, y, x, map_win):
         terrain = self.map[y][x]
         if not terrain.discovered: map_win.addch(y, x, ' ')
         elif terrain.visible and terrain.occupied: map_win.addch(y,x,terrain.occupied.sign)
         elif terrain.visible and terrain.loot: map_win.addch(y,x,terrain.loot.sign)
-        else: map_win.addch(y,x,terrain.sign,terrain.color)                 
-                    
-    def check_visibility(self, rays, player):
+        else: map_win.addch(y,x,terrain.sign,terrain.color)                      
+      
+            
+    def draw_all(self, rays, player, map_win):
     
         for row in self.map:         # reset visibility to False for the whole map            
             for terrain in row: terrain.visible = False
@@ -50,18 +52,14 @@ class Level():
             for i in range(1, len(ray)):
                 if not self.is_beyond_map(ray[i][0]+player.y,ray[i][1]+player.x) and not self.map[ray[i-1][0]+player.y][ray[i-1][1]+player.x].solid:
     	            self.make_visible(ray[i][0]+player.y,ray[i][1]+player.x)
-                else: break          
-                
-            
-    def draw(self, map_win):
-        map_win.clear()
-        for y, row in enumerate(self.map):
-            for terrain in row:
-                if not terrain.discovered: map_win.addch(' ')
-                elif terrain.visible and terrain.occupied: map_win.addch(terrain.occupied.sign)
-                elif terrain.visible and terrain.loot: map_win.addch(terrain.loot.sign)
-                else: map_win.addch(terrain.sign,terrain.color)
-            map_win.move(y+1,0) #map_win.addch('\n')    
+                else: break 
+    
+        map_win.clear()		
+        for y in range(self.height):  #draw whole map
+            for x in range(self.width):
+                self.draw_single(y,x, map_win)
+            map_win.move(y+1,0)
+       
             
     def draw_visible(self, rays, player, map_win):
            
@@ -80,27 +78,26 @@ class Level():
     	            self.make_visible(ray[i][0]+player.y, ray[i][1]+player.x)
     	            self.draw_single(ray[i][0]+player.y, ray[i][1]+player.x, map_win)
                 else: break
+    
         
+    def hide_this(self, obj, map_win):
+        y, x = obj.y, obj.x
+        if self.map[y][x].visible:  #dissapear visible object
+            map_win.addch(y, x, self.map[y][x].sign, self.map[y][x].color)
+                                 
 
     def random_place(self, agent):
         while True:
             y = random.randint(0,self.height-1)
             x = random.randint(0,self.width-1)
-            #if self.map[y][x].solid or self.map[y][x].occupied: continue
             if self.is_space_unavaible(y,x): continue
             else:
                 self.map[y][x].occupied = agent
                 agent.y = y
                 agent.x = x
                 break
-                
-    def generate_monsters(self):
-        for i in range(self.width//2):
-            monster = Monster(name='kobold', sign='k')
-            self.monsters.append(monster)
-            self.random_place(monster)
-    
-            
+
+
     def is_beyond_map(self, y, x):
         return y < 0 or x < 0 or y >= self.height or x >= self.width
         
