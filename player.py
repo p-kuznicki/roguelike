@@ -2,12 +2,17 @@ import random
 
 class Player():
 
-    def __init__(self, name):
+    def __init__(self, name, to_hit, damage, defense, hp):
         self.name = name
         self.sign = '@'
+        self.kills = 0
+        self.inventory= []
+        self.to_hit = to_hit
+        self.damage = damage
+        self.defense = defense
+        self.hp = hp
         self.y = None
         self.x = None
-        self.inventory= []
         
                 
     def move(self, level, y, x):
@@ -17,6 +22,7 @@ class Player():
         elif level.map[ny][nx].occupied:
             level.map[ny][nx].occupied.die(level)
             #level.remove_monster(level.map[ny][nx].occupied)
+            self.kills += 1
         else: 
             level.map[self.y][self.x].occupied = False
             self.y = ny

@@ -25,17 +25,17 @@ class Level():
                     self.map[y].append(Terrain(name = 'grass', sign='\"'))
                     
             
-    def draw(self, stdscr):
-        stdscr.clear()
+    def draw(self, map_win):
+        map_win.clear()
         for row in (self.map):
             for terrain in row:
-                if not terrain.discovered: stdscr.addch(' ')
-                elif terrain.visible and terrain.occupied: stdscr.addch(terrain.occupied.sign)
-                elif terrain.visible and terrain.loot: stdscr.addch(terrain.loot.sign)
+                if not terrain.discovered: map_win.addch(' ')
+                elif terrain.visible and terrain.occupied: map_win.addch(terrain.occupied.sign)
+                elif terrain.visible and terrain.loot: map_win.addch(terrain.loot.sign)
                 else:
-                    if terrain.name == 'grass': stdscr.addch(terrain.sign, curses.color_pair(1))
-                    else: stdscr.addch(terrain.sign)
-            stdscr.addch('\n')    # stdscr.move(y+1,0)
+                    if terrain.name == 'grass': map_win.addch(terrain.sign, curses.color_pair(1))
+                    else: map_win.addch(terrain.sign)
+            map_win.addch('\n')    # map_win.move(y+1,0)
 
     def random_place(self, agent):
         while True:
