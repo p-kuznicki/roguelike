@@ -31,6 +31,7 @@ class Player():
             
     def get_loot(self, level):
         if level.map[self.y][self.x].loot:
+            level.items.remove(level.map[self.y][self.x].loot)
             self.inventory.append(level.map[self.y][self.x].loot)
             level.map[self.y][self.x].loot = False
-    
+

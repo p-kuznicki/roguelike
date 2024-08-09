@@ -1,7 +1,7 @@
 import random
 import curses
 
-from terrain import Terrain
+from terrain import *
 from monster import Monster
 from item import Item
 
@@ -15,24 +15,27 @@ class Level():
         self.density = density
         self.map = []
         self.monsters = []
+        self.items = []
         
         for y in range(height):
             self.map.append([])
             for x in range(width):
-                if random.randint(1,100) <= self.density:
-                    self.map[y].append(Terrain(name = 'rock', sign='#', solid = True))
-                else:
-                    self.map[y].append(Terrain(name = 'grass', sign='\"'))
+                if random.randint(1,100) <= self.density: self.map[y].append(Rock())
+                elif random.randint(0,3) == 0: self.map[y].append(Tree())
+                else: self.map[y].append(Grass())
                     
+    
+    def hide_this(self, obj, map_win):
+        y, x = obj.y, obj.x
+        if self.map[y][x].visible:  #dissapear visible element
+            map_win.addch(y,x,self.map[y][x].sign,self.map[y][x].color)
                     
     def draw_single(self, y, x, map_win):
         terrain = self.map[y][x]
         if not terrain.discovered: map_win.addch(y, x, ' ')
         elif terrain.visible and terrain.occupied: map_win.addch(y,x,terrain.occupied.sign)
         elif terrain.visible and terrain.loot: map_win.addch(y,x,terrain.loot.sign)
-        else:
-            if terrain.name == 'grass': map_win.addch(y,x,terrain.sign, curses.color_pair(1))
-            else: map_win.addch(y,x,terrain.sign)                    
+        else: map_win.addch(y,x,terrain.sign,terrain.color)                 
                     
     def check_visibility(self, rays, player):
     
@@ -52,15 +55,13 @@ class Level():
             
     def draw(self, map_win):
         map_win.clear()
-        for row in (self.map):
+        for y, row in enumerate(self.map):
             for terrain in row:
                 if not terrain.discovered: map_win.addch(' ')
                 elif terrain.visible and terrain.occupied: map_win.addch(terrain.occupied.sign)
                 elif terrain.visible and terrain.loot: map_win.addch(terrain.loot.sign)
-                else:
-                    if terrain.name == 'grass': map_win.addch(terrain.sign, curses.color_pair(1))
-                    else: map_win.addch(terrain.sign)
-            map_win.addch('\n')    # map_win.move(y+1,0)
+                else: map_win.addch(terrain.sign,terrain.color)
+            map_win.move(y+1,0) #map_win.addch('\n')    
             
     def draw_visible(self, rays, player, map_win):
            

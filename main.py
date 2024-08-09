@@ -15,9 +15,10 @@ def main(stdscr):
     text_win = curses.newwin(2, min_width, min_height-5, 0)
 
     curses.start_color()
-    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     
-    level = Level('random level', height=min_height-6, width=min_width-1)
+    level = Level('random level', height=min_height-6, width=min_width)
     level.generate_monsters()
     
     player = Player('Johnny', 80, 8, 20, 25)
@@ -29,9 +30,9 @@ def main(stdscr):
     level.draw(map_win)
     draw_info(text_win, player)
     
-    game = True
+    level_loop = True
     
-    while game:
+    while level_loop:
         
       
         map_win.move(player.y,player.x) # move cursor to player position
@@ -40,7 +41,7 @@ def main(stdscr):
         
         key = map_win.getkey()
         if key == 'q':
-            game = False
+            level_loop = False
             break
         elif key == 'w': player.move(level, -1, 0)
         elif key == 'a': player.move(level, 0, -1)
@@ -48,12 +49,11 @@ def main(stdscr):
         elif key == 'd': player.move(level, 0, 1)
         elif key == 'e': player.get_loot(level)
         
-        
+        for item in level.items: level.hide_this(item, map_win)
+              
         for monster in level.monsters:
-            if level.map[monster.y][monster.x].visible:
-                if level.map[monster.y][monster.x].name == 'grass': map_win.addch(monster.y, monster.x, '\"', curses.color_pair(1))
-                else: map_win.addch(monster.y, monster.sign, '#')
-            monster.choose_action(level, player)
+            level.hide_this(monster, map_win)
+            monster.choose_action(level, player) 
             
         level.draw_visible(sight.rays, player, map_win)
         draw_info(text_win, player)  
