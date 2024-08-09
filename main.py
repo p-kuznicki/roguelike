@@ -5,7 +5,7 @@ from player import Player
 from sight import Sight
 from helpers import check_terminal_size, draw_info
 
-min_height = 30
+min_height = 28
 min_width = 80
 
 def main(stdscr):
@@ -25,13 +25,15 @@ def main(stdscr):
     
     sight = Sight(rays_density=12, sight_range=8)
     
+    level.check_visibility(sight.rays, player)
+    level.draw(map_win)
+    draw_info(text_win, player)
+    
     game = True
     
     while game:
         
-        level.check_visibility(sight.rays, player)
-        level.draw(map_win)
-        draw_info(text_win, player)        
+      
         map_win.move(player.y,player.x) # move cursor to player position
 
         #stdscr.refresh()
@@ -46,9 +48,15 @@ def main(stdscr):
         elif key == 'd': player.move(level, 0, 1)
         elif key == 'e': player.get_loot(level)
         
-        for monster in level.monsters:
-            monster.choose_action(level, player)
         
+        for monster in level.monsters:
+            if level.map[monster.y][monster.x].visible:
+                if level.map[monster.y][monster.x].name == 'grass': map_win.addch(monster.y, monster.x, '\"', curses.color_pair(1))
+                else: map_win.addch(monster.y, monster.sign, '#')
+            monster.choose_action(level, player)
+            
+        level.draw_visible(sight.rays, player, map_win)
+        draw_info(text_win, player)  
         
                     
 wrapper(main)
