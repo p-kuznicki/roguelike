@@ -6,35 +6,36 @@ from sight import Sight
 from status import Status
 from helpers import check_terminal_size
 
-min_height = 28
+min_height = 20
 min_width = 80
 
 def main(stdscr):
 
     check_terminal_size(stdscr, min_height, min_width)
-    map_win = curses.newwin(min_height-5, min_width, 0 , 0)
-    attributes_win = curses.newwin(2, min_width, min_height-5, 0)
-    message_win = curses.newwin(2, min_width, min_height-2, 0)    
+    message_win = curses.newwin(1, min_width, 0, 0)
+    map_win = curses.newwin(min_height-2, min_width, 1 , 0)
+    attributes_win = curses.newwin(1, min_width, min_height-1, 0)
+        
 
     curses.start_color()
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     
-    level = Level('random level', height=min_height-6, width=min_width)
+    level = Level('random level', height=min_height-2, width=min_width)
     
     player = Player('Johnny', 80, 8, 20, 25)
     level.random_place(player)
-    status = Status(player, message_win, attributes_win)
+    status = Status(min_width)
     
-    sight = Sight(rays_density=12, sight_range=8)
+    sight = Sight(rays_density=12, sight_range=7)
     
     level_loop = True
     
     while level_loop:
     
         level.draw_visible(sight.rays, player, map_win)
-        if player.attributes_changed: status.update_attributes()
-        if player.message or status.displaying_message: status.update_message()      
+        if player.attributes_changed: status.update_attributes(player, attributes_win)
+        if player.message or status.displaying_message: status.update_message(player, message_win)      
               
         map_win.move(player.y,player.x) # move cursor to player position
 

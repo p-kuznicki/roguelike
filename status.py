@@ -1,24 +1,27 @@
 class Status():
-    def __init__(self, player, message_win, attributes_win):
-        self.mess_win = message_win
-        self.att_win = attributes_win
-        self.player = player 
+    def __init__(self, min_width): 
         self.displaying_message = False
+        self.min_width = min_width
         
         
-    def update_message(self):
+    def update_message(self, player, message_win):
         if self.displaying_message:
-            self.mess_win.clear()
+            message_win.clear()
             self.displaying_message = False
-        if self.player.message:
-            self.mess_win.addstr(0,1, self.player.message)
-            self.player.message = None
-            self.displaying_message = True
-        self.mess_win.refresh()
+        if player.message:
+            if len(player.message) < self.min_width-1: message_win.addstr(0,1, player.message)
+            else:
+                message_win.addstr(0,1, player.message[0:self.min_width-8]+"(more)")
+                message_win.getkey()
+                message_win.clear()
+                message_win.addstr(0,1, player.message[self.min_width-8:-1])
+            player.message = None
+            self.displaying_message = True   
+        message_win.refresh()
         
-    def update_attributes(self):
-        self.att_win.addstr(0,1, f"{self.player.name} ToHit:{self.player.to_hit}  DMG:1-{self.player.damage}  DFNS:{self.player.defense}  \
-HP:{self.player.hp}  kills:{self.player.kills}")
-        self.att_win.refresh()
-        self.player.attributes_changed = False
+    def update_attributes(self, player, att_win):
+        att_win.addstr(0,1, f"{player.name} ToHit:{player.to_hit}  DMG:1-{player.damage}  DFNS:{player.defense}  \
+HP:{player.hp}  kills:{player.kills}")
+        att_win.refresh()
+        player.attributes_changed = False
         

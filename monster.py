@@ -43,7 +43,14 @@ class Monster():
             if self.y > player.y: ny -=1        # if player has lower y adjust ny by y-1
             elif self.y < player.y: ny +=1      # if player has higher y adjust ny by y+1
             
-            if ny == player.y and  nx == player.x: return   	# if tries to go into player - do nothing... for now ]:->
+            if ny == player.y and  nx == player.x:      # if tries to go into player - attack
+                if random.randint(1, 100) <= self.to_hit - player.defense:
+                    damage = random.randint(1, self.damage)
+                    player.hp -= damage
+                    player.message = (player.message or "") + f"{self.name} hits you for {damage}. "
+                    player.attributes_changed = True
+                else: player.message = (player.message or "") + f"{self.name} misses you. "
+                return   	
             
             if level.is_space_unavaible(ny, nx):					# if direct path unavaible try other:
                 if player.x == nx and not level.is_space_unavaible(ny, nx+1): nx +=1          # if is in the same column as player and diagonal right is open, go diag-right   
