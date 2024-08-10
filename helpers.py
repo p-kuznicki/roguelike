@@ -8,8 +8,4 @@ def check_terminal_size(stdscr, min_height, min_width):
         stdscr.refresh()
         stdscr.getch()
         return False
-        
-def draw_info(text_win, player):
-    text_win.addstr(0,1, player.name)
-    text_win.addstr(0,10, f"ToHit:{player.to_hit}  DMG:1-{player.damage}  DFNS:{player.defense}  HP:{player.hp}  kills:{player.kills}")
-    text_win.refresh()
+

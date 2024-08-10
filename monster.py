@@ -2,9 +2,13 @@ import random, curses
 from item import Item
 
 class Monster():
-    def __init__(self, name, sign):
+    def __init__(self, name, sign, to_hit, damage, defense, hp):
         self.name = name
         self.sign = sign
+        self.to_hit = to_hit
+        self.damage = damage
+        self.defense = defense
+        self.hp = hp
         self.y = None
         self.x = None
         
@@ -50,4 +54,8 @@ class Monster():
                 elif nx != player.x and ny !=player.y and not level.is_space_unavaible(self.y,nx): ny = self.y # if tries to go diagonal, and path along y axis is open go along y
                 else: return								                                    # if non apply, do nothing	
             self.complete_movement(level, ny, nx)
-    
+
+
+class Kobold(Monster):
+    def __init__(self):
+        super().__init__(name='kobold', sign='k', to_hit=45, damage=3, defense=0, hp=5)

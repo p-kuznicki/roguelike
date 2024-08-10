@@ -13,7 +13,7 @@ class Terrain():
 
 class Grass(Terrain):
     def __init__(self):
-        super().__init__(name = 'grass', sign = '\"', color = curses.color_pair(2))
+        super().__init__(name = 'grass', sign = '„', color = curses.color_pair(2))
         
 class Tree(Terrain):
     def __init__(self):

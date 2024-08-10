@@ -11,18 +11,31 @@ class Player():
         self.damage = damage
         self.defense = defense
         self.hp = hp
+        self.message = None
+        self.attributes_changed = True
         self.y = None
         self.x = None
-        
+    
+    def attack(self, monster, level):
+        if random.randint(1,100) <= self.to_hit - monster.defense:
+            self.message = (self.message or "") + f"You hit {monster.name}. "
+            monster.hp -= random.randint(1, self.damage)
+            if monster.hp <= 0:
+                self.message = (self.message or "") + f"You kill {monster.name}. "
+                self.kills += 1
+                self.attributes_changed = True
+                monster.die(level)
+        else: self.message = (self.message or "") + f"You miss {monster.name}. "
                 
     def move(self, level, y, x):
         ny = self.y + y
         nx = self.x + x
         if level.is_beyond_map(ny,nx) or level.map[ny][nx].solid: return
         elif level.map[ny][nx].occupied:
-            level.map[ny][nx].occupied.die(level)
+            self.attack(level.map[ny][nx].occupied, level)
+            #level.map[ny][nx].occupied.die(level)
             #level.remove_monster(level.map[ny][nx].occupied)
-            self.kills += 1
+            #self.kills += 1
         else: 
             level.map[self.y][self.x].occupied = False
             self.y = ny

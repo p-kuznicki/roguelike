@@ -2,7 +2,7 @@ import random
 import curses
 
 from terrain import *
-from monster import Monster
+from monster import *
 from item import Item
 
 class Level():
@@ -25,7 +25,7 @@ class Level():
                 else: self.map[y].append(Grass())
                 
         for i in range(self.width//2):   # generate monsters
-            monster = Monster(name='kobold', sign='k')
+            monster = Kobold()
             self.monsters.append(monster)
             self.random_place(monster)
                     
@@ -39,7 +39,7 @@ class Level():
         else: map_win.addch(y,x,terrain.sign,terrain.color)                      
       
             
-    def draw_all(self, rays, player, map_win):
+    def draw_all(self, rays, player, map_win):  # CURRENTLY UNUSED, may be useful later
     
         for row in self.map:         # reset visibility to False for the whole map            
             for terrain in row: terrain.visible = False

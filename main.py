@@ -3,7 +3,8 @@ from curses import wrapper
 from level import Level
 from player import Player
 from sight import Sight
-from helpers import check_terminal_size, draw_info
+from status import Status
+from helpers import check_terminal_size
 
 min_height = 28
 min_width = 80
@@ -12,7 +13,8 @@ def main(stdscr):
 
     check_terminal_size(stdscr, min_height, min_width)
     map_win = curses.newwin(min_height-5, min_width, 0 , 0)
-    text_win = curses.newwin(2, min_width, min_height-5, 0)
+    attributes_win = curses.newwin(2, min_width, min_height-5, 0)
+    message_win = curses.newwin(2, min_width, min_height-2, 0)    
 
     curses.start_color()
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -22,15 +24,17 @@ def main(stdscr):
     
     player = Player('Johnny', 80, 8, 20, 25)
     level.random_place(player)
+    status = Status(player, message_win, attributes_win)
     
     sight = Sight(rays_density=12, sight_range=8)
-
-    level.draw_all(sight.rays, player, map_win)
-    draw_info(text_win, player)
     
     level_loop = True
     
     while level_loop:
+    
+        level.draw_visible(sight.rays, player, map_win)
+        if player.attributes_changed: status.update_attributes()
+        if player.message or status.displaying_message: status.update_message()      
               
         map_win.move(player.y,player.x) # move cursor to player position
 
@@ -49,9 +53,5 @@ def main(stdscr):
         for monster in level.monsters:
             level.hide_this(monster, map_win)
             monster.action(level, player) 
-            
-        level.draw_visible(sight.rays, player, map_win)
-        draw_info(text_win, player)  
-        
-                    
+                
 wrapper(main)
