@@ -1,9 +1,9 @@
 import random
-import curses
+#import curses
 
 from terrain import *
 from monster import *
-from item import Item
+from item import *
 
 class Level():
 
@@ -27,7 +27,10 @@ class Level():
         for i in range(self.width//2):   # generate monsters
             monster = Kobold()
             self.monsters.append(monster)
-            self.random_place(monster)
+            self.random_place_agent(monster)
+            weapon = Short_Sword()
+            self.random_place_item(weapon)
+            self.items.append(weapon)
                     
 
                
@@ -53,12 +56,18 @@ class Level():
                 if not self.is_beyond_map(ray[i][0]+player.y,ray[i][1]+player.x) and not self.map[ray[i-1][0]+player.y][ray[i-1][1]+player.x].solid:
     	            self.make_visible(ray[i][0]+player.y,ray[i][1]+player.x)
                 else: break 
-    
+        
         map_win.clear()		
         for y in range(self.height):  #draw whole map
             for x in range(self.width):
                 self.draw_single(y,x, map_win)
             map_win.move(y+1,0)
+            
+    def draw_rectangle_area(self, map_win, height, width):
+        for y in range(height):
+            #map_win.move(y,0)
+            for x in range(width):
+                self.draw_single(y,x, map_win)
        
             
     def draw_visible(self, rays, player, map_win):
@@ -85,8 +94,20 @@ class Level():
         if self.map[y][x].visible:  #dissapear visible object
             map_win.addch(y, x, self.map[y][x].sign, self.map[y][x].color)
                                  
-
-    def random_place(self, agent):
+    def random_place_item(self, item):
+        while True:
+            y = random.randint(0,self.height-1)
+            x = random.randint(0,self.width-1)
+            if self.map[y][x].solid: continue
+            else:
+                self.map[y][x].loot = item
+                item.y = y
+                item.x = x
+                break
+ 
+    
+    
+    def random_place_agent(self, agent):
         while True:
             y = random.randint(0,self.height-1)
             x = random.randint(0,self.width-1)

@@ -14,7 +14,7 @@ class Monster():
         
     def die(self, level):
             curses.beep()
-            new_item = Item(name='corpse', sign='%', y=self.y, x=self.x)
+            new_item = Item(name=f"{self.name} corpse", sign='%', y=self.y, x=self.x)
             level.map[self.y][self.x].loot = new_item
             level.items.append(new_item)
             level.monsters.remove(self)
@@ -47,9 +47,9 @@ class Monster():
                 if random.randint(1, 100) <= self.to_hit - player.defense:
                     damage = random.randint(1, self.damage)
                     player.hp -= damage
-                    player.message = (player.message or "") + f"{self.name} hits you for {damage}. "
+                    player.message = (player.message or "") + f" {self.name} hits you for {damage}."
                     player.attributes_changed = True
-                else: player.message = (player.message or "") + f"{self.name} misses you. "
+                else: player.message = (player.message or "") + f" {self.name} misses you."
                 return   	
             
             if level.is_space_unavaible(ny, nx):					# if direct path unavaible try other:

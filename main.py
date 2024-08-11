@@ -4,6 +4,7 @@ from level import Level
 from player import Player
 from sight import Sight
 from status import Status
+from inventory_view import Inventory_view
 from helpers import check_terminal_size
 
 min_height = 20
@@ -20,13 +21,17 @@ def main(stdscr):
     curses.start_color()
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    
     
     level = Level('random level', height=min_height-2, width=min_width)
     
     player = Player('Johnny', 80, 8, 20, 25)
-    level.random_place(player)
+    level.random_place_agent(player)
     status = Status(min_width)
     
+    inventory_width = 20
+    inventory_view = Inventory_view(player.inventory, inventory_width)
     sight = Sight(rays_density=12, sight_range=7)
     
     level_loop = True
@@ -48,6 +53,10 @@ def main(stdscr):
         elif key == 's': player.move(level, 1, 0)
         elif key == 'd': player.move(level, 0, 1)
         elif key == 'e': player.get_loot(level)
+        elif key == 'i':
+            inventory_view.open(map_win, level, player)
+            level.draw_rectangle_area(map_win, len(player.inventory)+2, inventory_width)  #redraw map on the inventory menu
+            continue
         
         for item in level.items: level.hide_this(item, map_win)
               

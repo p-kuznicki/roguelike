@@ -7,6 +7,7 @@ class Player():
         self.sign = '@'
         self.kills = 0
         self.inventory= []
+        self.carry_limit = 10
         self.to_hit = to_hit
         self.damage = damage
         self.defense = defense
@@ -18,14 +19,14 @@ class Player():
     
     def attack(self, monster, level):
         if random.randint(1,100) <= self.to_hit - monster.defense:
-            self.message = (self.message or "") + f"You hit {monster.name}. "
+            self.message = (self.message or "") + f" You hit {monster.name}."
             monster.hp -= random.randint(1, self.damage)
             if monster.hp <= 0:
-                self.message = (self.message or "") + f"You kill {monster.name}. "
+                self.message = (self.message or "") + f" You kill {monster.name}."
                 self.kills += 1
                 self.attributes_changed = True
                 monster.die(level)
-        else: self.message = (self.message or "") + f"You miss {monster.name}. "
+        else: self.message = (self.message or "") + f" You miss {monster.name}."
                 
     def move(self, level, y, x):
         ny = self.y + y
@@ -43,8 +44,11 @@ class Player():
             level.map[self.y][self.x].occupied = self
             
     def get_loot(self, level):
-        if level.map[self.y][self.x].loot:
+        if level.map[self.y][self.x].loot and len(self.inventory) >= self.carry_limit:
+            self.message = (self.message or "") + "You carry too much!"
+        elif level.map[self.y][self.x].loot:
             level.items.remove(level.map[self.y][self.x].loot)
             self.inventory.append(level.map[self.y][self.x].loot)
+            self.message = (self.message or "") + f" You pick up {level.map[self.y][self.x].loot.name}."
             level.map[self.y][self.x].loot = False
 
