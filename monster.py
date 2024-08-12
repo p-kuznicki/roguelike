@@ -15,7 +15,7 @@ class Monster():
     def die(self, level):
             curses.beep()
             new_item = Item(name=f"{self.name} corpse", sign='%', y=self.y, x=self.x)
-            level.map[self.y][self.x].loot = new_item
+            level.map[self.y][self.x].loot.append(new_item)
             level.items.append(new_item)
             level.monsters.remove(self)
             level.map[self.y][self.x].occupied = False

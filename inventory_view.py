@@ -20,8 +20,8 @@ class Inventory_view():
         if key in self.letters_to_numbers and self.letters_to_numbers[key] < len(self.inventory):
             item = self.inventory[self.letters_to_numbers[key]]
             level.items.append(item)
-            level.map[player.y][player.x].loot = item
-            del item
+            level.map[player.y][player.x].loot.append(item)
+            self.inventory.remove(item)
         curses.curs_set(1)
         
         

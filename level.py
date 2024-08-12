@@ -38,7 +38,7 @@ class Level():
         terrain = self.map[y][x]
         if not terrain.discovered: map_win.addch(y, x, ' ')
         elif terrain.visible and terrain.occupied: map_win.addch(y,x,terrain.occupied.sign)
-        elif terrain.visible and terrain.loot: map_win.addch(y,x,terrain.loot.sign)
+        elif terrain.visible and terrain.loot: map_win.addch(y,x,terrain.loot[0].sign)
         else: map_win.addch(y,x,terrain.sign,terrain.color)                      
       
             
@@ -100,7 +100,7 @@ class Level():
             x = random.randint(0,self.width-1)
             if self.map[y][x].solid: continue
             else:
-                self.map[y][x].loot = item
+                self.map[y][x].loot.append(item)
                 item.y = y
                 item.x = x
                 break

@@ -9,7 +9,7 @@ class Terrain():
         self.discovered = discovered
         self.visible = visible
         self.occupied = False
-        self.loot = False
+        self.loot = []
 
 class Grass(Terrain):
     def __init__(self):
