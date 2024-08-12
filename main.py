@@ -30,7 +30,7 @@ def main(stdscr):
     level.random_place_agent(player)
     status = Status(min_width)
     
-    inventory_width = 20
+    inventory_width = 25
     inventory_view = Inventory_view(player.inventory, inventory_width)
     sight = Sight(rays_density=12, sight_range=7)
     
@@ -52,10 +52,9 @@ def main(stdscr):
         elif key == 'a': player.move(level, 0, -1)
         elif key == 's': player.move(level, 1, 0)
         elif key == 'd': player.move(level, 0, 1)
-        elif key == 'e': player.get_loot(level)
+        elif key == 'e': inventory_view.try_to_get_item(map_win, player, level)
         elif key == 'i':
-            inventory_view.open(map_win, level, player)
-            level.draw_rectangle_area(map_win, len(player.inventory)+2, inventory_width)  #redraw map on the inventory menu
+            inventory_view.open(map_win, player, level)
             continue
         
         for item in level.items: level.hide_this(item, map_win)

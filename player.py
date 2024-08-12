@@ -43,7 +43,7 @@ class Player():
             self.x = nx
             level.map[self.y][self.x].occupied = self
             
-    def get_loot(self, level):
+    def get_loot(self, level):  # CURRENTLY UNUSED
         if level.map[self.y][self.x].loot and len(self.inventory) >= self.carry_limit:
             self.message = (self.message or "") + "You carry too much!"
         elif len(level.map[self.y][self.x].loot) == 1:  #if there is only one item take it 
