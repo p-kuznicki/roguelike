@@ -38,7 +38,7 @@ class Level():
         terrain = self.map[y][x]
         if not terrain.discovered: map_win.addch(y, x, ' ')
         elif terrain.visible and terrain.occupied: map_win.addch(y,x,terrain.occupied.sign)
-        elif terrain.visible and terrain.loot: map_win.addch(y,x,terrain.loot[0].sign)
+        elif terrain.visible and terrain.loot: map_win.addch(y,x,terrain.loot[-1].sign)
         else: map_win.addch(y,x,terrain.sign,terrain.color)                      
       
             

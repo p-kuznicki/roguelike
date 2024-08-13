@@ -26,12 +26,11 @@ def main(stdscr):
     
     level = Level('random level', height=min_height-2, width=min_width)
     
-    player = Player('Johnny', 80, 8, 20, 25)
+    player = Player('Johnny', to_hit=80, base_damage=1, defense=20, hp=25)
     level.random_place_agent(player)
     status = Status(min_width)
-    
-    inventory_width = 25
-    inventory_view = Inventory_view(player.inventory, inventory_width)
+
+    inventory_view = Inventory_view()
     sight = Sight(rays_density=12, sight_range=7)
     
     level_loop = True
@@ -54,7 +53,7 @@ def main(stdscr):
         elif key == 'd': player.move(level, 0, 1)
         elif key == 'e': inventory_view.try_to_get_item(map_win, player, level)
         elif key == 'i':
-            inventory_view.open(map_win, player, level)
+            inventory_view.open(map_win, player, level, "Inventory")
             continue
         
         for item in level.items: level.hide_this(item, map_win)

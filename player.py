@@ -2,16 +2,18 @@ import random
 
 class Player():
 
-    def __init__(self, name, to_hit, damage, defense, hp):
+    def __init__(self, name, to_hit, base_damage, defense, hp):
         self.name = name
         self.sign = '@'
         self.kills = 0
         self.inventory= []
         self.carry_limit = 10
         self.to_hit = to_hit
-        self.damage = damage
+        self.base_damage = base_damage
+        self.damage = base_damage
         self.defense = defense
         self.hp = hp
+        self.weapon_arm = None
         self.message = None
         self.attributes_changed = True
         self.y = None
