@@ -63,12 +63,13 @@ class Inventory_view():
                 instruction = "unequip an item first."
             else: instruction = "This can not be equipped."
             self.open(map_win, player, level, instruction)
-        #key = key.lower()
-        #if key in self.key_to_index and self.key_to_index[key] < len(player.inventory):
-        #    item = player.inventory[self.key_to_index[key]]
-        #    level.items.append(item)
-        #    level.map[player.y][player.x].loot.append(item)
-        #    player.inventory.remove(item)
-        #    player.message = (player.message or "") + f"You dropped {item.name}"
+        if key == key.upper() and key.lower() in self.key_to_index and self.key_to_index[key.lower()] < len(player.inventory):
+            item = player.inventory[self.key_to_index[key.lower()]]
+            if item.equipped: self.open(map_win, player, level, "Unequip this item first!!")
+            else:
+                level.items.append(item)
+                level.map[player.y][player.x].loot.append(item)
+                player.inventory.remove(item)
+                player.message = (player.message or "") + f"You dropped {item.name}"
         level.draw_rectangle_area(map_win, len(player.inventory)+4, self.width) # redraw map
         curses.curs_set(1)
