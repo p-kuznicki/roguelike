@@ -31,6 +31,12 @@ class Level():
             weapon = Short_Sword()
             self.random_place_item(weapon)
             self.items.append(weapon)
+            armor = Iron_Helmet()
+            self.random_place_item(armor)
+            self.items.append(armor)
+            armor = Light_Armor()
+            self.random_place_item(armor)
+            self.items.append(armor)
                     
 
                

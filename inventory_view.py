@@ -35,7 +35,30 @@ class Inventory_view():
             level.draw_rectangle_area(map_win, len(loot)+2, self.width)  # redraw map
             curses.curs_set(1)
         else: player.message = (player.message or "") + "There is nothing here."
-        
+
+    def equip_or_remove(self, item, player):
+        for slot in player.equipment_slots:
+            if item.appropriate_slot == slot.name: break          
+        if item.equipped:  # unequip item if equipped
+            slot.used = None
+            item.equipped = False
+            if item.category == "weapon": player.damage = player.base_damage
+            elif item.category == "armor": player.defense = player.defense - item.defense
+            player.attributes_changed = True
+            item.name = item.name[0:-11]  # remove " (equipped)" from item name
+            instruction = f"You put away {item.name}."
+        elif not slot.used:
+            slot.used = item
+            item.equipped = True
+            if item.category == "weapon": player.damage = player.base_damage + item.damage
+            elif item.category == "armor": player.defense = player.defense + item.defense
+            player.attributes_changed = True
+            instruction = f"You equipped {item.name}."
+            item.name = item.name + " (equipped)"
+        elif slot.used:
+            instruction = "unequip an item first."
+        return instruction
+            
         
     def open(self, map_win, player, level, instruction):
         map_win.addstr(0, 0, instruction, curses.color_pair(3))
@@ -45,22 +68,7 @@ class Inventory_view():
         key = map_win.getkey()
         if key in self.key_to_index and self.key_to_index[key] < len(player.inventory):
             item = player.inventory[self.key_to_index[key]]
-            if item.equipped:
-                player.weapon_arm = None
-                item.equipped = False
-                player.damage = player.base_damage
-                item.name = item.name[0:-11]
-                instruction = f"You put away {item.name}."
-                player.attributes_changed = True
-            elif item.equipment == "weapon_arm" and player.weapon_arm == None:
-                player.weapon_arm = item
-                item.equipped = True
-                player.damage = player.base_damage + item.damage
-                instruction = f"You equipped {item.name}."
-                item.name = item.name + " (equipped)"
-                player.attributes_changed = True
-            elif item.equipment == "weapon_arm" and player.weapon_arm:
-                instruction = "unequip an item first."
+            if item.appropriate_slot: instruction = self.equip_or_remove(item, player) #equip or unequip item, then return instruction
             else: instruction = "This can not be equipped."
             self.open(map_win, player, level, instruction)
         if key == key.upper() and key.lower() in self.key_to_index and self.key_to_index[key.lower()] < len(player.inventory):
