@@ -19,18 +19,19 @@ class Player():
         self.y = None
         self.x = None
         
-        class Equipment_Slot():
-            def __init__(self):
-                self.used = []
+        class Equipment():
+            def __init__(self, max_items = 1):
+                self.slot = []
+                self.max_items = max_items
                 
         
-        self.equipment_slots = {
-            "head": Equipment_Slot(),
-            "neck": Equipment_Slot(),
-            "body": Equipment_Slot(),
-            "weapon_hand": Equipment_Slot(),
-            "shield_hand": Equipment_Slot(),
-            "rings": Equipment_Slot()}
+        self.equipment = {
+            "head": Equipment(),
+            "neck": Equipment(),
+            "body": Equipment(),
+            "weapon_hand": Equipment(),
+            "shield_hand": Equipment(),
+            "rings": Equipment(max_items=2)}
         
     
     def attack(self, monster, level):

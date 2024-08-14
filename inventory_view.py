@@ -38,22 +38,22 @@ class Inventory_view():
 
     def equip_or_remove(self, item, player):
 
-        slot =  player.equipment_slots[item.appropriate_slot]
+        equipment =  player.equipment[item.appropriate_slot]
         if item.equipped:
-            slot.used.remove(item)
-            if item.appropriate_slot=="weapon_hand" and item.two_handed: player.equipment_slots["shield_hand"].used.remove(item)
+            equipment.slot.remove(item)
+            if item.appropriate_slot=="weapon_hand" and item.two_handed: player.equipment["shield_hand"].slot.remove(item)
             item.equipped = False
             if item.category == "weapon": player.damage = player.base_damage
             elif item.category == "armor": player.defense = player.defense - item.defense
             if item.special: item.special("off", player)
             player.attributes_changed = True
-            item.name = item.name[0:-11]  # remove " (equipped)" from item name
+            item.name = item.name[0:-11]  		# remove " (equipped)" from item name
             instruction = f"You put away {item.name}."
-        elif len(slot.used) < 1 or (item.category=="ring" and len(slot.used) < 2):
+        elif len(equipment.slot) < equipment.max_items:
             if item.appropriate_slot=="weapon_hand" and item.two_handed: 
-                if player.equipment_slots["shield_hand"].used: return "unequip a shield first."
-                else: player.equipment_slots["shield_hand"].used.append(item)
-            slot.used.append(item)
+                if player.equipment["shield_hand"].slot: return "unequip a shield first."
+                else: player.equipment["shield_hand"].slot.append(item)
+            equipment.slot.append(item)
             item.equipped = True
             if item.category == "weapon": player.damage = player.base_damage + item.damage
             elif item.category == "armor": player.defense = player.defense + item.defense
