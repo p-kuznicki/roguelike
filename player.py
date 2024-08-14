@@ -20,8 +20,8 @@ class Player():
         self.x = None
         
         class Equipment_Slot():
-            def __init__(self, used=False):
-                self.used = used
+            def __init__(self):
+                self.used = []
                 
         
         self.equipment_slots = {
@@ -30,7 +30,7 @@ class Player():
             "body": Equipment_Slot(),
             "weapon_hand": Equipment_Slot(),
             "shield_hand": Equipment_Slot(),
-            "rings": Equipment_Slot(used=[])}
+            "rings": Equipment_Slot()}
         
     
     def attack(self, monster, level):
