@@ -41,6 +41,7 @@ class Inventory_view():
             if item.appropriate_slot == slot.name: break          
         if item.equipped:  # unequip item if equipped
             slot.used = None
+            if slot.name=="weapon_hand" and item.two_handed: player.equipment_slots[4].used = None
             item.equipped = False
             if item.category == "weapon": player.damage = player.base_damage
             elif item.category == "armor": player.defense = player.defense - item.defense
@@ -49,6 +50,9 @@ class Inventory_view():
             item.name = item.name[0:-11]  # remove " (equipped)" from item name
             instruction = f"You put away {item.name}."
         elif not slot.used:
+            if slot.name =="weapon_hand" and item.two_handed: 
+                if player.equipment_slots[4].used: return "unequip a shield first."
+                else: player.equipment_slots[4].used = True
             slot.used = item
             item.equipped = True
             if item.category == "weapon": player.damage = player.base_damage + item.damage

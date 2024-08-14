@@ -21,9 +21,10 @@ class Item():
         
 
 class Weapon(Item):
-    def __init__(self, name, damage, special=None):
+    def __init__(self, name, damage, two_handed=False, special=None):
         super().__init__(name=name, sign=")", category="weapon", appropriate_slot="weapon_hand", special=special)
         self.damage = damage
+        self.two_handed = two_handed
 
 class Armor(Item):
     def __init__(self, name, defense, appropriate_slot):
@@ -37,6 +38,10 @@ class Necklace(Item):
 class Short_Sword(Weapon):
     def __init__(self):
         super().__init__(name="short sword", damage = 6)
+
+class Zweihander(Weapon):
+    def __init__(self):
+        super().__init__(name="zweihander!", damage = 10, two_handed = True)
         
 class Murder_Mace(Weapon):
     def __init__(self):
@@ -50,6 +55,11 @@ class Iron_Helmet(Armor):
 class Light_Armor(Armor):
     def __init__(self):
         super().__init__(name="light armor", defense = 10, appropriate_slot= "body")
+        
+class Iron_Shield(Armor):
+    def __init__(self):
+        super().__init__(name="iron shield", defense = 10, appropriate_slot= "shield_hand")
+        
         
 class Life_Necklace(Necklace):
     def __init__(self):
