@@ -64,3 +64,7 @@ class Iron_Shield(Armor):
 class Life_Necklace(Necklace):
     def __init__(self):
         super().__init__(name="life necklace", special=self.extra_hp)
+        
+class Dummy_Ring(Item):
+    def __init__(self):
+        super().__init__(name="dummy_ring", sign = "=", category="ring",  appropriate_slot="rings")

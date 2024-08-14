@@ -37,11 +37,25 @@ class Inventory_view():
         else: player.message = (player.message or "") + "There is nothing here."
 
     def equip_or_remove(self, item, player):
-        for slot in player.equipment_slots:
-            if item.appropriate_slot == slot.name: break          
-        if item.equipped:  # unequip item if equipped
+
+        slot =  player.equipment_slots[item.appropriate_slot]
+        if item.appropriate_slot=="rings":
+            if item.equipped:
+                slot.used.remove(item)
+                item.equipped = False
+                item.name = item.name[0:-11]  # remove " (equipped)" from item name
+                instruction = f"You put away {item.name}."
+            elif len(slot.used) < 2:
+                slot.used.append(item)
+                item.equipped = True
+                instruction = f"You equipped {item.name}."
+                item.name = item.name + " (equipped)"
+            elif len(slot.used) >=2:
+                instruction = "unequip an item first."
+                        
+        elif item.equipped:  # unequip item if equipped
             slot.used = None
-            if slot.name=="weapon_hand" and item.two_handed: player.equipment_slots[4].used = None
+            if item.appropriate_slot=="weapon_hand" and item.two_handed: player.equipment_slots["shield_hand"].used = None
             item.equipped = False
             if item.category == "weapon": player.damage = player.base_damage
             elif item.category == "armor": player.defense = player.defense - item.defense
@@ -49,10 +63,10 @@ class Inventory_view():
             player.attributes_changed = True
             item.name = item.name[0:-11]  # remove " (equipped)" from item name
             instruction = f"You put away {item.name}."
-        elif not slot.used:
-            if slot.name =="weapon_hand" and item.two_handed: 
-                if player.equipment_slots[4].used: return "unequip a shield first."
-                else: player.equipment_slots[4].used = True
+        elif not slot.used:  # equip
+            if item.appropriate_slot=="weapon_hand" and item.two_handed: 
+                if player.equipment_slots["shield_hand"].used: return "unequip a shield first."
+                else: player.equipment_slots["shield_hand"].used = True
             slot.used = item
             item.equipped = True
             if item.category == "weapon": player.damage = player.base_damage + item.damage
@@ -61,7 +75,7 @@ class Inventory_view():
             player.attributes_changed = True
             instruction = f"You equipped {item.name}."
             item.name = item.name + " (equipped)"
-        elif slot.used:
+        elif slot.used:  # send message if slot unavaible
             instruction = "unequip an item first."
         return instruction
             
@@ -87,3 +101,6 @@ class Inventory_view():
                 player.message = (player.message or "") + f"You dropped {item.name}"
         level.draw_rectangle_area(map_win, len(player.inventory)+4, self.width) # redraw map
         curses.curs_set(1)
+        
+        
+      

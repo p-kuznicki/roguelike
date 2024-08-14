@@ -19,18 +19,19 @@ class Player():
         self.y = None
         self.x = None
         
-        self.equipment_slots = []
-        
         class Equipment_Slot():
-            def __init__(self, name):
-                self.name = name
-                self.used = False
+            def __init__(self, used=False):
+                self.used = used
                 
-        self.equipment_slots.append(Equipment_Slot(name="head"))
-        self.equipment_slots.append(Equipment_Slot(name="neck"))
-        self.equipment_slots.append(Equipment_Slot(name="body"))
-        self.equipment_slots.append(Equipment_Slot(name="weapon_hand"))
-        self.equipment_slots.append(Equipment_Slot(name="shield_hand"))
+        
+        self.equipment_slots = {
+            "head": Equipment_Slot(),
+            "neck": Equipment_Slot(),
+            "body": Equipment_Slot(),
+            "weapon_hand": Equipment_Slot(),
+            "shield_hand": Equipment_Slot(),
+            "rings": Equipment_Slot(used=[])}
+        
     
     def attack(self, monster, level):
         if random.randint(1,100) <= self.to_hit - monster.defense:

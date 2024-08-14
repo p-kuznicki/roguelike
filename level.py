@@ -29,7 +29,7 @@ class Level():
             self.monsters.append(monster)
             self.random_place_agent(monster)
             
-            items = [Short_Sword(), Iron_Shield(), Light_Armor(), Life_Necklace(), Murder_Mace(), Zweihander()]
+            items = [Dummy_Ring(), Short_Sword(), Iron_Shield(), Light_Armor(), Life_Necklace(), Murder_Mace(), Zweihander()]
             for item in items:
                 self.random_place_item(item)
                 self.items.append(item)
