@@ -44,6 +44,7 @@ class Inventory_view():
             item.equipped = False
             if item.category == "weapon": player.damage = player.base_damage
             elif item.category == "armor": player.defense = player.defense - item.defense
+            if item.special: item.special("off", player)
             player.attributes_changed = True
             item.name = item.name[0:-11]  # remove " (equipped)" from item name
             instruction = f"You put away {item.name}."
@@ -52,6 +53,7 @@ class Inventory_view():
             item.equipped = True
             if item.category == "weapon": player.damage = player.base_damage + item.damage
             elif item.category == "armor": player.defense = player.defense + item.defense
+            if item.special: item.special("on", player)
             player.attributes_changed = True
             instruction = f"You equipped {item.name}."
             item.name = item.name + " (equipped)"

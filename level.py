@@ -28,15 +28,12 @@ class Level():
             monster = Kobold()
             self.monsters.append(monster)
             self.random_place_agent(monster)
-            weapon = Short_Sword()
-            self.random_place_item(weapon)
-            self.items.append(weapon)
-            armor = Iron_Helmet()
-            self.random_place_item(armor)
-            self.items.append(armor)
-            armor = Light_Armor()
-            self.random_place_item(armor)
-            self.items.append(armor)
+            
+            items = [Short_Sword(), Iron_Helmet(), Light_Armor(), Life_Necklace(), Murder_Mace()]
+            for item in items:
+                self.random_place_item(item)
+                self.items.append(item)
+            
                     
 
                
