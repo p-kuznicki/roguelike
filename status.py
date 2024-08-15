@@ -21,7 +21,7 @@ class Status():
         
     def update_attributes(self, player, att_win):
         att_win.clear()
-        att_win.addstr(0,1, f"{player.name} ToHit:{player.to_hit}  DMG:1-{player.damage}  DFNS:{player.defense}  \
+        att_win.addstr(0,1, f"{player.name} ToHit:{player.to_hit}  DFNS:{player.defense}  \
 HP:{player.hp}  kills:{player.kills}")
         att_win.refresh()
         player.attributes_changed = False

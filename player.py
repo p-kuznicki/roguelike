@@ -10,11 +10,9 @@ class Player():
         self.inventory= [ShortSword(), MurderMace(), HellfireStaff()]
         self.carry_limit = 10
         self.to_hit = to_hit
-        self.base_damage = base_damage
-        self.damage = base_damage
+        self.unarmed = Fists()
         self.defense = defense
         self.hp = hp
-        self.weapon_arm = None
         self.message = None
         self.attributes_changed = True
         self.attack = self.default_attack
@@ -37,8 +35,8 @@ class Player():
         
         
         
-    
-    def default_attack(self, monster, level, player=None):
+    # CURRENTLY UNUSED
+    def default_attack(self, monster, level, player=None):   
         if random.randint(1,100) <= self.to_hit - monster.defense:
             self.message = (self.message or "") + f" You hit {monster.name}."
             monster.hp -= random.randint(1, self.damage)
@@ -54,17 +52,17 @@ class Player():
         nx = self.x + x
         if level.is_beyond_map(ny,nx) or level.map[ny][nx].solid: return
         elif level.map[ny][nx].occupied:
-            self.attack(level.map[ny][nx].occupied, level, self)
-            #level.map[ny][nx].occupied.die(level)
-            #level.remove_monster(level.map[ny][nx].occupied)
-            #self.kills += 1
+            monster = level.map[ny][nx].occupied
+            if self.equipment["weapon_hand"].slot: self.equipment["weapon_hand"].slot[0].attack(level, monster, self)
+            else: self.unarmed.attack(level, monster, self)
         else: 
             level.map[self.y][self.x].occupied = False
             self.y = ny
             self.x = nx
             level.map[self.y][self.x].occupied = self
-            
-    def get_loot(self, level):  # CURRENTLY UNUSED
+    
+    # CURRENTLY UNUSED        
+    def get_loot(self, level): 
         if level.map[self.y][self.x].loot and len(self.inventory) >= self.carry_limit:
             self.message = (self.message or "") + "You carry too much!"
         elif len(level.map[self.y][self.x].loot) == 1:  #if there is only one item take it 
