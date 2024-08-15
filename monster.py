@@ -1,5 +1,5 @@
 import random, curses
-from item import Corpse
+from items import Corpse
 
 class Monster():
     def __init__(self, name, sign, to_hit, damage, defense, hp):

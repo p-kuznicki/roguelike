@@ -3,7 +3,7 @@ import random
 
 from terrain import *
 from monster import *
-from item import *
+from items import *
 
 class Level():
 
