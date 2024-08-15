@@ -45,7 +45,7 @@ class Inventory_view():
             item.equipped = False
             if item.category == "weapon": player.damage = player.base_damage
             elif item.category == "armor": player.defense = player.defense - item.defense
-            if item.special: item.special("off", player)
+            if item.special: item.special(player, "off")
             player.attributes_changed = True
             item.name = item.name[0:-11]  		# remove " (equipped)" from item name
             instruction = f"You put away {item.name}."
@@ -57,7 +57,7 @@ class Inventory_view():
             item.equipped = True
             if item.category == "weapon": player.damage = player.base_damage + item.damage
             elif item.category == "armor": player.defense = player.defense + item.defense
-            if item.special: item.special("on", player)
+            if item.special: item.special(player, "on")
             player.attributes_changed = True
             instruction = f"You equipped {item.name}."
             item.name = item.name + " (equipped)"
@@ -74,9 +74,14 @@ class Inventory_view():
         key = map_win.getkey()
         if key in self.key_to_index and self.key_to_index[key] < len(player.inventory):
             item = player.inventory[self.key_to_index[key]]
-            if item.appropriate_slot: instruction = self.equip_or_remove(item, player) #equip or unequip item, then return instruction
-            else: instruction = "This can not be equipped."
-            self.open(map_win, player, level, instruction)
+            if item.appropriate_slot:
+                instruction = self.equip_or_remove(item, player) #equip or unequip item, then return instruction
+                self.open(map_win, player, level, instruction)
+            elif item.usable:
+                item.special(player)
+                player.inventory.remove(item)
+            else: self.open(map_win, player, level, "You don't know how to use that.")
+            
         if key == key.upper() and key.lower() in self.key_to_index and self.key_to_index[key.lower()] < len(player.inventory):
             item = player.inventory[self.key_to_index[key.lower()]]
             if item.equipped: self.open(map_win, player, level, "Unequip this item first!!")

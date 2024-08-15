@@ -1,5 +1,5 @@
 import random, curses
-from item import Item
+from item import Corpse
 
 class Monster():
     def __init__(self, name, sign, to_hit, damage, defense, hp):
@@ -14,7 +14,7 @@ class Monster():
         
     def die(self, level):
             curses.beep()
-            new_item = Item(name=f"{self.name} corpse", sign='%', y=self.y, x=self.x)
+            new_item = Corpse(name=f"{self.name} corpse", y=self.y, x=self.x)
             level.map[self.y][self.x].loot.append(new_item)
             level.items.append(new_item)
             level.monsters.remove(self)
