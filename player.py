@@ -1,4 +1,5 @@
 import random
+from items import *
 
 class Player():
 
@@ -6,7 +7,7 @@ class Player():
         self.name = name
         self.sign = '@'
         self.kills = 0
-        self.inventory= []
+        self.inventory= [ShortSword(), MurderMace(), HellfireStaff()]
         self.carry_limit = 10
         self.to_hit = to_hit
         self.base_damage = base_damage
@@ -16,6 +17,7 @@ class Player():
         self.weapon_arm = None
         self.message = None
         self.attributes_changed = True
+        self.attack = self.default_attack
         self.y = None
         self.x = None
         
@@ -33,8 +35,10 @@ class Player():
             "shield_hand": Equipment(),
             "rings": Equipment(max_items=2)}
         
+        
+        
     
-    def attack(self, monster, level):
+    def default_attack(self, monster, level, player=None):
         if random.randint(1,100) <= self.to_hit - monster.defense:
             self.message = (self.message or "") + f" You hit {monster.name}."
             monster.hp -= random.randint(1, self.damage)
@@ -50,7 +54,7 @@ class Player():
         nx = self.x + x
         if level.is_beyond_map(ny,nx) or level.map[ny][nx].solid: return
         elif level.map[ny][nx].occupied:
-            self.attack(level.map[ny][nx].occupied, level)
+            self.attack(level.map[ny][nx].occupied, level, self)
             #level.map[ny][nx].occupied.die(level)
             #level.remove_monster(level.map[ny][nx].occupied)
             #self.kills += 1
