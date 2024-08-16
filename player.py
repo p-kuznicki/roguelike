@@ -1,4 +1,6 @@
+
 import random
+
 from items import *
 
 class Player():
@@ -47,14 +49,15 @@ class Player():
                 monster.die(level)
         else: self.message = (self.message or "") + f" You miss {monster.name}."
                 
-    def move(self, level, y, x):
+    def move(self, level, y, x, map_win):
         ny = self.y + y
         nx = self.x + x
         if level.is_beyond_map(ny,nx) or level.map[ny][nx].solid: return
         elif level.map[ny][nx].occupied:
             monster = level.map[ny][nx].occupied
-            if self.equipment["weapon_hand"].slot: self.equipment["weapon_hand"].slot[0].attack(level, monster, self)
-            else: self.unarmed.attack(level, monster, self)
+            # if there is a weapon in equipment slot used its attack
+            if self.equipment["weapon_hand"].slot: self.equipment["weapon_hand"].slot[0].attack(level, monster, self, map_win)
+            else: self.unarmed.attack(level, monster, self, map_win)
         else: 
             level.map[self.y][self.x].occupied = False
             self.y = ny

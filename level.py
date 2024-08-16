@@ -38,11 +38,12 @@ class Level():
 
                
     def draw_single(self, y, x, map_win):
+        method = map_win.addch if (y+1, x+1) != (self.height, self.width) else map_win.insch
         terrain = self.map[y][x]
-        if not terrain.discovered: map_win.addch(y, x, ' ')
-        elif terrain.visible and terrain.occupied: map_win.addch(y,x,terrain.occupied.sign)
-        elif terrain.visible and terrain.loot: map_win.addch(y,x,terrain.loot[-1].sign)
-        else: map_win.addch(y,x,terrain.sign,terrain.color)                      
+        if not terrain.discovered: method(y, x, ' ')
+        elif terrain.visible and terrain.occupied: method(y,x,terrain.occupied.sign)
+        elif terrain.visible and terrain.loot: method(y,x,terrain.loot[-1].sign)
+        else: method(y,x,terrain.sign,terrain.color)                      
       
             
     def draw_all(self, rays, player, map_win):  # CURRENTLY UNUSED, may be useful later

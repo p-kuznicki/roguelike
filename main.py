@@ -22,11 +22,13 @@ def main(stdscr):
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     
     
     level = Level('random level', height=min_height-2, width=min_width)
     
-    player = Player('Johnny', to_hit=80, base_damage=1, defense=20, hp=25)
+    player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
     level.random_place_agent(player)
     status = Status(min_width)
 
@@ -47,10 +49,10 @@ def main(stdscr):
         if key == 'q':
             level_loop = False
             break
-        elif key == 'w': player.move(level, -1, 0)
-        elif key == 'a': player.move(level, 0, -1)
-        elif key == 's': player.move(level, 1, 0)
-        elif key == 'd': player.move(level, 0, 1)
+        elif key == 'w': player.move(level, -1, 0, map_win)
+        elif key == 'a': player.move(level, 0, -1, map_win)
+        elif key == 's': player.move(level, 1, 0, map_win)
+        elif key == 'd': player.move(level, 0, 1, map_win)
         elif key == 'e': inventory_view.try_to_get_item(map_win, player, level)
         elif key == 'i':
             inventory_view.open(map_win, player, level, "Inventory")

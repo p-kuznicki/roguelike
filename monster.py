@@ -13,7 +13,6 @@ class Monster():
         self.x = None
         
     def die(self, level):
-            curses.beep()
             new_item = Corpse(name=f"{self.name} corpse", y=self.y, x=self.x)
             level.map[self.y][self.x].loot.append(new_item)
             level.items.append(new_item)
