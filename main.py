@@ -24,6 +24,7 @@ def main(stdscr):
     curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
     curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_RED)
     
     
     level = Level('random level', height=min_height-2, width=min_width)
@@ -42,7 +43,7 @@ def main(stdscr):
         level.draw_visible(sight.rays, player, map_win)
         if player.attributes_changed: status.update_attributes(player, attributes_win)
         if player.message or status.displaying_message: status.update_message(player, message_win)      
-              
+        if player.hit: player.bleed(map_win) 
         map_win.move(player.y,player.x) # move cursor to player position
 
         key = map_win.getkey()

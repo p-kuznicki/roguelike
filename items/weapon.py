@@ -49,7 +49,7 @@ class Weapon(Item):
         y, x = monster.y, monster.x
         map_win.addch(y, x, monster.sign, curses.color_pair(4))
         map_win.refresh()
-        time.sleep(0.2)
+        time.sleep(0.25)
         level.draw_single(y, x, map_win)
         map_win.refresh()
         curses.curs_set(1)
@@ -60,7 +60,7 @@ class Weapon(Item):
         y, x = monster.y, monster.x
         map_win.addch(y, x, "-")
         map_win.refresh()
-        time.sleep(0.2)
+        time.sleep(0.25)
         level.draw_single(y, x, map_win)
         map_win.refresh()
         curses.curs_set(1)
@@ -82,7 +82,7 @@ class Weapon(Item):
         else: self.miss_animation(level, monster, map_win) 
         if monster.hp > 0:
             curses.curs_set(0)
-            time.sleep(0.2)
+            time.sleep(0.25)
             if self.hit_and_damage(monster, player):
                 self.death_check(level, monster, player)
                 self.hit_animation(level, monster, map_win)

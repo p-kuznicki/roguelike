@@ -48,6 +48,7 @@ class Monster():
                     player.hp -= damage
                     player.message = (player.message or "") + f" {self.name} hits you for {damage}."
                     player.attributes_changed = True
+                    player.hit = True
                 else: player.message = (player.message or "") + f" {self.name} misses you."
                 return   	
             

@@ -1,5 +1,6 @@
-
+import curses
 import random
+import time
 
 from items import *
 
@@ -15,6 +16,7 @@ class Player():
         self.unarmed = Fists()
         self.defense = defense
         self.hp = hp
+        self.hit = False
         self.message = None
         self.attributes_changed = True
         self.attack = self.default_attack
@@ -63,6 +65,15 @@ class Player():
             self.y = ny
             self.x = nx
             level.map[self.y][self.x].occupied = self
+            
+    def bleed(self, map_win):
+        curses.curs_set(0)
+        map_win.addch(self.y, self.x, self.sign, curses.color_pair(4))
+        map_win.refresh()
+        time.sleep(0.25)
+        self.hit=False
+        map_win.addch(self.y, self.x, self.sign)
+        curses.curs_set(1)
     
     # CURRENTLY UNUSED        
     def get_loot(self, level): 
