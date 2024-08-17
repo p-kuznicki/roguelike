@@ -27,14 +27,17 @@ def main(stdscr):
     curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_RED)
     
     
-    level = Level('random level', height=min_height-2, width=min_width)
+    #level = Level(height=min_height-2, width=min_width)
+    #level.generate_random_rock_map()
+    level = Level(height=min_height-2, width=min_width)
+    level.generate_random_room()
     
     player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
     level.random_place_agent(player)
     status = Status(min_width)
 
     inventory_view = Inventory_view()
-    sight = Sight(rays_density=12, sight_range=7)
+    sight = Sight(rays_density=20, sight_range=7)
     
     level_loop = True
     

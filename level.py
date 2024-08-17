@@ -7,9 +7,9 @@ from items import *
 
 class Level():
 
-    def __init__(self, name, width=40, height=20, density=25):
+    def __init__(self, width=12, height=12, density=25):
         
-        self.name = name
+        self.name = ''
         self.width = width
         self.height = height
         self.density = density
@@ -17,9 +17,55 @@ class Level():
         self.monsters = []
         self.items = []
         
-        for y in range(height):   # generate map
+        
+    def generate_random_room(self):
+        self.name = "random_room"
+        room_height = random.randint(5,9)
+        room_width = random.randint(5,9)
+        room_start_y = random.randint(0,self.height-10)
+        room_start_x = random.randint(0,self.width-10)
+        room_end_y = room_start_y + room_height
+        room_end_x = room_start_x + room_width
+        while True:
+            door_side = random.randint(0,3)
+            if door_side == 0:
+                 door_y, door_x = room_start_y, random.randint(room_start_x+1, room_end_x-1)
+                 door_direction = (-1, 0)
+            elif door_side == 1:
+                 door_y, door_x = room_end_y, random.randint(room_start_x+1, room_end_x-1)
+                 door_direction = (+1, 0)
+            elif door_side == 2:
+                 door_x, door_y = room_start_x, random.randint(room_start_y+1, room_end_y-1)
+                 door_direction = (0, -1)
+            elif door_side == 3:
+                 door_x, door_y = room_end_x, random.randint(room_start_y+1, room_end_y-1)
+                 door_direction = (0, +1)
+            if not (door_y == 0 or door_y == self.height or door_x == 0 or door_x == self.width): break
+        for y in range(self.height):   # generate map
             self.map.append([])
-            for x in range(width):
+            for x in range(self.width):
+               if y == door_y and x == door_x: self.map[y].append(Door())
+               elif x > room_start_x and x < room_end_x and y > room_start_y and y < room_end_y:
+                   self.map[y].append(Floor())
+               else: self.map[y].append(Rock())
+        i = 0
+        while True:
+            i += 1 
+            y = door_y + i*door_direction[0]
+            x = door_x + i*door_direction[1]
+            if not self.is_beyond_map(y, x):
+                self.map[y][x] = Floor()
+            else: break
+        
+                    
+        
+    def generate_random_rock_map(self):
+        
+        self.name = "random_rock_map"
+        
+        for y in range(self.height):   # generate map
+            self.map.append([])
+            for x in range(self.width):
                 if random.randint(1,100) <= self.density: self.map[y].append(Rock())
                 elif random.randint(0,3) == 0: self.map[y].append(Tree())
                 else: self.map[y].append(Grass())

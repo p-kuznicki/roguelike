@@ -23,6 +23,14 @@ class Tree(Terrain):
 class Rock(Terrain):
     def __init__(self):
         super().__init__(name = 'rock', sign = '#', color = curses.color_pair(1), solid = True)
+        
+class Floor(Terrain):
+    def __init__(self):
+        super().__init__(name = 'floor', sign = '.', color = curses.color_pair(1))
+
+class Door(Terrain):
+    def __init__(self):
+        super().__init__(name = 'door', sign = '/', solid=False, color = curses.color_pair(4))
 
    
 #       def draw_ground(self):
