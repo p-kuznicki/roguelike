@@ -7,8 +7,8 @@ from status import Status
 from inventory_view import Inventory_view
 from helpers import check_terminal_size
 
-min_height = 20
-min_width = 80
+min_height = 25
+min_width = 50
 
 def main(stdscr):
 
@@ -27,10 +27,11 @@ def main(stdscr):
     curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_RED)
     
     
-    #level = Level(height=min_height-2, width=min_width)
-    #level.generate_random_rock_map()
     level = Level(height=min_height-2, width=min_width)
-    level.generate_random_room()
+    #level.generate_random_rock_map()
+    #level = Level(height=min_height-2, width=min_width)
+    #level.generate_random_room()
+    level.generate_two_random_rooms()
     
     player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
     level.random_place_agent(player)

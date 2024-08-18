@@ -57,8 +57,53 @@ class Level():
                 self.map[y][x] = Floor()
             else: break
         
-                    
+    def generate_two_random_rooms(self):                
+        for y in range(self.height):   # fill the map with rocks
+            self.map.append([])
+            for x in range(self.width): self.map[y].append(Rock())
         
+        room_height = random.randint(3,6)
+        room_width = random.randint(3,6)
+        room_start_y = random.randint(1,self.height//2-8)
+        room_start_x = random.randint(1,(self.width//2)-8)
+        room_end_y = room_start_y + room_height
+        room_end_x = room_start_x + room_width
+        
+        for y in range(room_start_y,room_end_y+1):
+            for x in range(room_start_x,room_end_x+1): self.map[y][x] = Floor()
+            
+        door1_y, door1_x = random.randint(room_start_y,room_end_y), room_end_x+1
+        self.map[door1_y][door1_x] = Door()
+        
+        
+        room_height = random.randint(3,6)
+        room_width = random.randint(3,6)
+        room_start_y = random.randint(1,self.height//2-8)
+        room_start_x = random.randint(self.width//2,self.width-8)
+        room_end_y = room_start_y + room_height
+        room_end_x = room_start_x + room_width
+        
+        for y in range(room_start_y,room_end_y+1):
+            for x in range(room_start_x,room_end_x+1): self.map[y][x] = Floor()
+            
+        door2_y, door2_x = random.randint(room_start_y,room_end_y), room_start_x-1
+        self.map[door2_y][door2_x] = Door()
+        
+        turn_x = random.randint(door1_x+1,door2_x-1)
+        for x in range(door1_x+1, turn_x+1):
+            self.map[door1_y][x] = Floor()
+            
+        for x in range(turn_x,door2_x):
+            self.map[door2_y][x] = Floor()
+        
+        if door1_y<door2_y: d =1
+        else: d = -1 
+        for y in range(door1_y,door2_y,d):
+            self.map[y][turn_x] = Floor()
+
+        
+        
+            
     def generate_random_rock_map(self):
         
         self.name = "random_rock_map"
