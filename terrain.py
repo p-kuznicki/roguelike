@@ -29,9 +29,10 @@ class Floor(Terrain):
         super().__init__(name = 'floor', sign = '.', color = curses.color_pair(1))
 
 class Door(Terrain):
-    def __init__(self):
+    def __init__(self, y=None, x=None):
         super().__init__(name = 'door', sign = '/', solid=False, color = curses.color_pair(4))
-
+        self.y = y
+        self.x = x
    
 #       def draw_ground(self):
 #            stdscr.addch(self.loot.sign) if self.loot else stdscr.addch(self.sign)

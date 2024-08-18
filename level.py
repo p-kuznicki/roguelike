@@ -2,12 +2,13 @@ import random
 #import curses
 
 from terrain import *
+from room import Room
 from monster import *
 from items import *
 
 class Level():
 
-    def __init__(self, width=12, height=12, density=25):
+    def __init__(self, width, height, density=None):
         
         self.name = ''
         self.width = width
@@ -18,7 +19,7 @@ class Level():
         self.items = []
         
         
-    def generate_random_room(self):
+    def generate_room(self):
         self.name = "random_room"
         room_height = random.randint(5,9)
         room_width = random.randint(5,9)
@@ -57,7 +58,7 @@ class Level():
                 self.map[y][x] = Floor()
             else: break
         
-    def generate_two_random_rooms(self):                
+    def generate_2_rooms(self):                
         for y in range(self.height):   # fill the map with rocks
             self.map.append([])
             for x in range(self.width): self.map[y].append(Rock())
@@ -100,9 +101,50 @@ class Level():
         else: d = -1 
         for y in range(door1_y,door2_y,d):
             self.map[y][turn_x] = Floor()
+            
+    def connect_doors_horizontally(self, door1, door2):
+        turn = random.randint(door1.x+1, door2.x-1)
+        for x in range(door1.x+1, turn+1):
+            self.map[door1.y][x] = Floor()
+        for x in range(turn,door2.x):
+            self.map[door2.y][x] = Floor()
+        if door1.y<door2.y: d = 1
+        else: d = -1 
+        for y in range(door1.y, door2.y, d):
+            self.map[y][turn] = Floor()
+            
+    def connect_doors_vertically(self, door1, door2):
+        turn = random.randint(door1.y+1, door2.y-1)
+        for y in range(door1.y+1, turn+1):
+            self.map[y][door1.x] = Floor()
+        for y in range(turn,door2.y):
+            self.map[y][door2.x] = Floor()
+        if door1.x<door2.x: d = 1
+        else: d = -1 
+        for x in range(door1.x, door2.x, d):
+            self.map[turn][x] = Floor()
+    
 
+    def fill_the_map(self, Terrain):
+        for y in range(self.height):
+            self.map.append([])
+            for x in range(self.width): self.map[y].append(Terrain())
         
+    def generate_4_rooms(self):
+        self.fill_the_map(Rock)
+        room00 = Room(0, 0, self.height//2, self.width//2, "bottom", "right")
+        room01 = Room(0, self.width//2+1, self.height//2, self.width, "bottom", "left")
+        room10 = Room(self.height//2+1, 0, self.height, self.width//2, "upper", "right")
+        room11 = Room(self.height//2+1, self.width//2+1, self.height, self.width, "upper", "left")
         
+        rooms = [room00, room01, room10, room11]
+        for room in rooms:
+            room.carve_out(self, Floor)
+            
+        self.connect_doors_horizontally(room00.door_v, room01.door_v)
+        self.connect_doors_horizontally(room10.door_v, room11.door_v)
+        self.connect_doors_vertically(room00.door_h, room10.door_h)
+        self.connect_doors_vertically(room01.door_h, room11.door_h)
             
     def generate_random_rock_map(self):
         

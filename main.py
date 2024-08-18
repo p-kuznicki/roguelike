@@ -27,11 +27,12 @@ def main(stdscr):
     curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_RED)
     
     
-    level = Level(height=min_height-2, width=min_width)
-    #level.generate_random_rock_map()
     #level = Level(height=min_height-2, width=min_width)
-    #level.generate_random_room()
-    level.generate_two_random_rooms()
+    level = Level(height=20, width=20)
+    #level.generate_random_rock_map()
+    #level.generate_room()
+    #level.generate_2_rooms()
+    level.generate_4_rooms()
     
     player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
     level.random_place_agent(player)
