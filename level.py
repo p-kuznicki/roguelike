@@ -132,19 +132,49 @@ class Level():
         
     def generate_4_rooms(self):
         self.fill_the_map(Rock)
-        room00 = Room(0, 0, self.height//2, self.width//2, "bottom", "right")
-        room01 = Room(0, self.width//2+1, self.height//2, self.width, "bottom", "left")
-        room10 = Room(self.height//2+1, 0, self.height, self.width//2, "upper", "right")
-        room11 = Room(self.height//2+1, self.width//2+1, self.height, self.width, "upper", "left")
+        room00 = Room(0, 0, self.height//2, self.width//2, b=1, r=1)
+        room01 = Room(0, self.width//2+1, self.height//2, self.width, b=1, l=1)
+        room10 = Room(self.height//2+1, 0, self.height, self.width//2, u=1, r=1)
+        room11 = Room(self.height//2+1, self.width//2+1, self.height, self.width, u=1, l=1)
         
         rooms = [room00, room01, room10, room11]
         for room in rooms:
             room.carve_out(self, Floor)
             
-        self.connect_doors_horizontally(room00.door_v, room01.door_v)
-        self.connect_doors_horizontally(room10.door_v, room11.door_v)
-        self.connect_doors_vertically(room00.door_h, room10.door_h)
-        self.connect_doors_vertically(room01.door_h, room11.door_h)
+        self.connect_doors_horizontally(room00.door_r, room01.door_l)
+        self.connect_doors_horizontally(room10.door_r, room11.door_l)
+        self.connect_doors_vertically(room00.door_b, room10.door_u)
+        self.connect_doors_vertically(room01.door_b, room11.door_u)
+        
+    def generate_9_rooms(self):
+        self.fill_the_map(Rock)
+        room00 = Room(0, 0, self.height//3, self.width//3, b=1, r=1)
+        room01 = Room(0, self.width//3+1, self.height//3, 2*self.width//3, b=1, l=1, r=1)
+        room02 = Room(0, 2*self.width//3+1, self.height//3, self.width, b=1, l=1)
+        room10 = Room(self.height//3+1, 0, 2*self.height//3, self.width//3, b=1, u=1, r=1)
+        room11 = Room(self.height//3+1, self.width//3+1, 2*self.height//3, 2*self.width//3, b=1, u=1, r=1, l=1)
+        room12 = Room(self.height//3+1, 2*self.width//3+1, 2*self.height//3, self.width, b=1, u=1, l=1)
+        room20 = Room(2*self.height//3+1, 0, self.height, self.width//3, u=1, r=1)
+        room21 = Room(2*self.height//3+1, self.width//3+1, self.height, 2*self.width//3, u=1, r=1, l=1)
+        room22 = Room(2*self.height//3+1, 2*self.width//3+1, self.height, self.width, u=1, l=1)
+        
+        rooms = [room00, room01, room02, room10, room11, room12, room20, room21, room22]
+        for room in rooms:
+            room.carve_out(self, Floor)
+            
+        self.connect_doors_horizontally(room00.door_r, room01.door_l)
+        self.connect_doors_horizontally(room10.door_r, room11.door_l)
+        self.connect_doors_horizontally(room20.door_r, room21.door_l)
+        self.connect_doors_horizontally(room01.door_r, room02.door_l)
+        self.connect_doors_horizontally(room11.door_r, room12.door_l)
+        self.connect_doors_horizontally(room21.door_r, room22.door_l)
+        
+        self.connect_doors_vertically(room00.door_b, room10.door_u)
+        self.connect_doors_vertically(room01.door_b, room11.door_u)
+        self.connect_doors_vertically(room02.door_b, room12.door_u)
+        self.connect_doors_vertically(room10.door_b, room20.door_u)
+        self.connect_doors_vertically(room11.door_b, room21.door_u)
+        self.connect_doors_vertically(room12.door_b, room22.door_u)
             
     def generate_random_rock_map(self):
         

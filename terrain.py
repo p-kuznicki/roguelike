@@ -22,7 +22,7 @@ class Tree(Terrain):
         
 class Rock(Terrain):
     def __init__(self):
-        super().__init__(name = 'rock', sign = '#', color = curses.color_pair(1), solid = True)
+        super().__init__(name = 'rock', sign = '#', color = curses.color_pair(1), solid = False)
         
 class Floor(Terrain):
     def __init__(self):
