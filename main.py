@@ -33,7 +33,8 @@ def main(stdscr):
     #level.generate_room()
     #level.generate_2_rooms()
     #level.generate_4_rooms()
-    level.generate_9_rooms()
+    #level.generate_9_rooms()
+    level.generate_9_rooms_alt()
     
     player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
     level.random_place_agent(player)

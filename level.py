@@ -175,6 +175,32 @@ class Level():
         self.connect_doors_vertically(room10.door_b, room20.door_u)
         self.connect_doors_vertically(room11.door_b, room21.door_u)
         self.connect_doors_vertically(room12.door_b, room22.door_u)
+
+    def generate_9_rooms_alt(self):
+    
+        self.fill_the_map(Rock)
+        
+        rows = [0, self.height//3, 2*self.height//3, self.height]
+        columns = [0, self.width//3, 2*self.width//3, self.width]
+        
+        rooms = []
+        for r in range(3):
+            rooms.append([])
+            for c in range(3):
+                rooms[r].append(Room(rows[r],columns[c],rows[r+1]-1,columns[c+1]-1))
+        
+        for y in range(3):
+            for x in range(3):
+                rooms[y][x].carve_out_alt(self, Floor, y, x)
+                 
+        for y in range(3):
+            for x in range(2):
+                self.connect_doors_horizontally(rooms[y][x].door_r, rooms[y][x+1].door_l)
+                
+        for y in range(2):
+            for x in range(3):
+                self.connect_doors_vertically(rooms[y][x].door_b, rooms[y+1][x].door_u)
+
             
     def generate_random_rock_map(self):
         

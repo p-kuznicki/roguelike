@@ -36,3 +36,23 @@ class Room():
         if self.door_l:
             self.door_l = Door(ra.randint(self.start_y, self.end_y-1), self.start_x-1)
             level.map[self.door_l.y][self.door_l.x] = self.door_l
+            
+            
+    def carve_out_alt(self, level, terrain, ry, rx):
+        for y in range(self.start_y, self.end_y):
+            for x in range(self.start_x, self.end_x):
+                level.map[y][x] = terrain()
+                
+        if not ry==0 :
+            self.door_u = Door(self.start_y-1, ra.randint(self.start_x, self.end_x-1))
+            level.map[self.door_u.y][self.door_u.x] = self.door_u
+        if not ry==2 :
+            self.door_b = Door(self.end_y, ra.randint(self.start_x, self.end_x-1))
+            level.map[self.door_b.y][self.door_b.x] = self.door_b
+        if not rx==0 :
+            self.door_l = Door(ra.randint(self.start_y, self.end_y-1), self.start_x-1)
+            level.map[self.door_l.y][self.door_l.x] = self.door_l
+        if not rx==2 : 
+            self.door_r = Door(ra.randint(self.start_y, self.end_y-1), self.end_x)
+            level.map[self.door_r.y][self.door_r.x] = self.door_r
+    
