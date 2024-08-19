@@ -7,8 +7,8 @@ from status import Status
 from inventory_view import Inventory_view
 from helpers import check_terminal_size
 
-min_height = 32
-min_width = 60
+min_height = 30
+min_width = 80
 
 def main(stdscr):
 
@@ -28,13 +28,13 @@ def main(stdscr):
     
     
     level = Level(height=min_height-2, width=min_width)
-    #level = Level(height=30, width=60)
     #level.generate_random_rock_map()
     #level.generate_room()
     #level.generate_2_rooms()
     #level.generate_4_rooms()
     #level.generate_9_rooms()
-    level.generate_9_rooms_alt()
+    #level.generate_9_rooms_alt()
+    level.generate_yx_rooms(3,5)
     
     player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
     level.random_place_agent(player)

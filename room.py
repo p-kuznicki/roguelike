@@ -56,3 +56,22 @@ class Room():
             self.door_r = Door(ra.randint(self.start_y, self.end_y-1), self.end_x)
             level.map[self.door_r.y][self.door_r.x] = self.door_r
     
+    
+    def carve_out_yx(self, level, terrain, room_y, room_x, max_y, max_x):
+    
+        for y in range(self.start_y, self.end_y):
+            for x in range(self.start_x, self.end_x):
+                level.map[y][x] = terrain()
+                
+        if room_y != 0 :
+            self.door_u = Door(self.start_y-1, ra.randint(self.start_x, self.end_x-1))
+            level.map[self.door_u.y][self.door_u.x] = self.door_u
+        if room_y != max_y-1 :
+            self.door_b = Door(self.end_y, ra.randint(self.start_x, self.end_x-1))
+            level.map[self.door_b.y][self.door_b.x] = self.door_b
+        if room_x != 0 :
+            self.door_l = Door(ra.randint(self.start_y, self.end_y-1), self.start_x-1)
+            level.map[self.door_l.y][self.door_l.x] = self.door_l
+        if room_x != max_x-1 : 
+            self.door_r = Door(ra.randint(self.start_y, self.end_y-1), self.end_x)
+            level.map[self.door_r.y][self.door_r.x] = self.door_r

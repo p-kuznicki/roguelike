@@ -201,6 +201,36 @@ class Level():
             for x in range(3):
                 self.connect_doors_vertically(rooms[y][x].door_b, rooms[y+1][x].door_u)
 
+    def generate_yx_rooms(self, max_y, max_x):
+    
+        self.fill_the_map(Rock)
+        
+        limits_y = []
+        limits_x = []
+        
+        for i in range(max_y+1): limits_y.append(int(i*(self.height/max_y)))
+            
+        for i in range(max_x+1): limits_x.append(int(i*(self.width/max_x)))
+        
+        rooms = []
+        for y in range(max_y):
+            rooms.append([])
+            for x in range(max_x):
+                rooms[y].append(Room(limits_y[y], limits_x[x], limits_y[y+1]-1, limits_x[x+1]-1))
+        
+        for y in range(max_y):
+            for x in range(max_x):
+                rooms[y][x].carve_out_yx(self, Floor, y, x, max_y, max_x)
+                 
+        for y in range(max_y):
+            for x in range(max_x-1):
+                self.connect_doors_horizontally(rooms[y][x].door_r, rooms[y][x+1].door_l)
+                
+        for y in range(max_y-1):
+            for x in range(max_x):
+                self.connect_doors_vertically(rooms[y][x].door_b, rooms[y+1][x].door_u)
+
+
             
     def generate_random_rock_map(self):
         
