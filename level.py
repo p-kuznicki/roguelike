@@ -18,89 +18,6 @@ class Level():
         self.monsters = []
         self.items = []
         
-        
-    def generate_room(self):
-        self.name = "random_room"
-        room_height = random.randint(5,9)
-        room_width = random.randint(5,9)
-        room_start_y = random.randint(0,self.height-10)
-        room_start_x = random.randint(0,self.width-10)
-        room_end_y = room_start_y + room_height
-        room_end_x = room_start_x + room_width
-        while True:
-            door_side = random.randint(0,3)
-            if door_side == 0:
-                 door_y, door_x = room_start_y, random.randint(room_start_x+1, room_end_x-1)
-                 door_direction = (-1, 0)
-            elif door_side == 1:
-                 door_y, door_x = room_end_y, random.randint(room_start_x+1, room_end_x-1)
-                 door_direction = (+1, 0)
-            elif door_side == 2:
-                 door_x, door_y = room_start_x, random.randint(room_start_y+1, room_end_y-1)
-                 door_direction = (0, -1)
-            elif door_side == 3:
-                 door_x, door_y = room_end_x, random.randint(room_start_y+1, room_end_y-1)
-                 door_direction = (0, +1)
-            if not (door_y == 0 or door_y == self.height or door_x == 0 or door_x == self.width): break
-        for y in range(self.height):   # generate map
-            self.map.append([])
-            for x in range(self.width):
-               if y == door_y and x == door_x: self.map[y].append(Door())
-               elif x > room_start_x and x < room_end_x and y > room_start_y and y < room_end_y:
-                   self.map[y].append(Floor())
-               else: self.map[y].append(Rock())
-        i = 0
-        while True:
-            i += 1 
-            y = door_y + i*door_direction[0]
-            x = door_x + i*door_direction[1]
-            if not self.is_beyond_map(y, x):
-                self.map[y][x] = Floor()
-            else: break
-        
-    def generate_2_rooms(self):                
-        for y in range(self.height):   # fill the map with rocks
-            self.map.append([])
-            for x in range(self.width): self.map[y].append(Rock())
-        
-        room_height = random.randint(3,6)
-        room_width = random.randint(3,6)
-        room_start_y = random.randint(1,self.height//2-8)
-        room_start_x = random.randint(1,(self.width//2)-8)
-        room_end_y = room_start_y + room_height
-        room_end_x = room_start_x + room_width
-        
-        for y in range(room_start_y,room_end_y+1):
-            for x in range(room_start_x,room_end_x+1): self.map[y][x] = Floor()
-            
-        door1_y, door1_x = random.randint(room_start_y,room_end_y), room_end_x+1
-        self.map[door1_y][door1_x] = Door()
-        
-        
-        room_height = random.randint(3,6)
-        room_width = random.randint(3,6)
-        room_start_y = random.randint(1,self.height//2-8)
-        room_start_x = random.randint(self.width//2,self.width-8)
-        room_end_y = room_start_y + room_height
-        room_end_x = room_start_x + room_width
-        
-        for y in range(room_start_y,room_end_y+1):
-            for x in range(room_start_x,room_end_x+1): self.map[y][x] = Floor()
-            
-        door2_y, door2_x = random.randint(room_start_y,room_end_y), room_start_x-1
-        self.map[door2_y][door2_x] = Door()
-        
-        turn_x = random.randint(door1_x+1,door2_x-1)
-        for x in range(door1_x+1, turn_x+1):
-            self.map[door1_y][x] = Floor()
-            
-        for x in range(turn_x,door2_x):
-            self.map[door2_y][x] = Floor()
-        
-        if door1_y<door2_y: d =1
-        else: d = -1 
-        for y in range(door1_y,door2_y,d):
-            self.map[y][turn_x] = Floor()
             
     def connect_doors_horizontally(self, door1, door2):
         turn = random.randint(door1.x+1, door2.x-1)
@@ -129,79 +46,11 @@ class Level():
         for y in range(self.height):
             self.map.append([])
             for x in range(self.width): self.map[y].append(Terrain())
-        
-    def generate_4_rooms(self):
-        self.fill_the_map(Rock)
-        room00 = Room(0, 0, self.height//2, self.width//2, b=1, r=1)
-        room01 = Room(0, self.width//2+1, self.height//2, self.width, b=1, l=1)
-        room10 = Room(self.height//2+1, 0, self.height, self.width//2, u=1, r=1)
-        room11 = Room(self.height//2+1, self.width//2+1, self.height, self.width, u=1, l=1)
-        
-        rooms = [room00, room01, room10, room11]
-        for room in rooms:
-            room.carve_out(self, Floor)
-            
-        self.connect_doors_horizontally(room00.door_r, room01.door_l)
-        self.connect_doors_horizontally(room10.door_r, room11.door_l)
-        self.connect_doors_vertically(room00.door_b, room10.door_u)
-        self.connect_doors_vertically(room01.door_b, room11.door_u)
-        
-    def generate_9_rooms(self):
-        self.fill_the_map(Rock)
-        room00 = Room(0, 0, self.height//3, self.width//3, b=1, r=1)
-        room01 = Room(0, self.width//3+1, self.height//3, 2*self.width//3, b=1, l=1, r=1)
-        room02 = Room(0, 2*self.width//3+1, self.height//3, self.width, b=1, l=1)
-        room10 = Room(self.height//3+1, 0, 2*self.height//3, self.width//3, b=1, u=1, r=1)
-        room11 = Room(self.height//3+1, self.width//3+1, 2*self.height//3, 2*self.width//3, b=1, u=1, r=1, l=1)
-        room12 = Room(self.height//3+1, 2*self.width//3+1, 2*self.height//3, self.width, b=1, u=1, l=1)
-        room20 = Room(2*self.height//3+1, 0, self.height, self.width//3, u=1, r=1)
-        room21 = Room(2*self.height//3+1, self.width//3+1, self.height, 2*self.width//3, u=1, r=1, l=1)
-        room22 = Room(2*self.height//3+1, 2*self.width//3+1, self.height, self.width, u=1, l=1)
-        
-        rooms = [room00, room01, room02, room10, room11, room12, room20, room21, room22]
-        for room in rooms:
-            room.carve_out(self, Floor)
-            
-        self.connect_doors_horizontally(room00.door_r, room01.door_l)
-        self.connect_doors_horizontally(room10.door_r, room11.door_l)
-        self.connect_doors_horizontally(room20.door_r, room21.door_l)
-        self.connect_doors_horizontally(room01.door_r, room02.door_l)
-        self.connect_doors_horizontally(room11.door_r, room12.door_l)
-        self.connect_doors_horizontally(room21.door_r, room22.door_l)
-        
-        self.connect_doors_vertically(room00.door_b, room10.door_u)
-        self.connect_doors_vertically(room01.door_b, room11.door_u)
-        self.connect_doors_vertically(room02.door_b, room12.door_u)
-        self.connect_doors_vertically(room10.door_b, room20.door_u)
-        self.connect_doors_vertically(room11.door_b, room21.door_u)
-        self.connect_doors_vertically(room12.door_b, room22.door_u)
 
-    def generate_9_rooms_alt(self):
+
+    def generate_yx_rooms(self, max_y, max_x, skip=None):
     
-        self.fill_the_map(Rock)
-        
-        rows = [0, self.height//3, 2*self.height//3, self.height]
-        columns = [0, self.width//3, 2*self.width//3, self.width]
-        
-        rooms = []
-        for r in range(3):
-            rooms.append([])
-            for c in range(3):
-                rooms[r].append(Room(rows[r],columns[c],rows[r+1]-1,columns[c+1]-1))
-        
-        for y in range(3):
-            for x in range(3):
-                rooms[y][x].carve_out_alt(self, Floor, y, x)
-                 
-        for y in range(3):
-            for x in range(2):
-                self.connect_doors_horizontally(rooms[y][x].door_r, rooms[y][x+1].door_l)
-                
-        for y in range(2):
-            for x in range(3):
-                self.connect_doors_vertically(rooms[y][x].door_b, rooms[y+1][x].door_u)
-
-    def generate_yx_rooms(self, max_y, max_x):
+        skip_these_doors = skip
     
         self.fill_the_map(Rock)
         
@@ -212,24 +61,40 @@ class Level():
             
         for i in range(max_x+1): limits_x.append(int(i*(self.width/max_x)))
         
+        # create rooms with position and dimensions
         rooms = []
         for y in range(max_y):
             rooms.append([])
             for x in range(max_x):
                 rooms[y].append(Room(limits_y[y], limits_x[x], limits_y[y+1]-1, limits_x[x+1]-1))
         
+        # actually put the rooms on the map (also create and place doors) 
         for y in range(max_y):
             for x in range(max_x):
                 rooms[y][x].carve_out_yx(self, Floor, y, x, max_y, max_x)
-                 
-        for y in range(max_y):
-            for x in range(max_x-1):
-                self.connect_doors_horizontally(rooms[y][x].door_r, rooms[y][x+1].door_l)
                 
+        # connect pairs of doors bottom to upper       
         for y in range(max_y-1):
             for x in range(max_x):
-                self.connect_doors_vertically(rooms[y][x].door_b, rooms[y+1][x].door_u)
-
+                if str(y)+str(x)+str(y+1)+str(x) in skip_these_doors:
+                    # wall up the doors instead
+                    by, bx = rooms[y][x].door_b.y, rooms[y][x].door_b.x # get yx coordinates from bottom room.door object
+                    self.map[by][bx] = Rock()
+                    uy, ux = rooms[y+1][x].door_u.y, rooms[y+1][x].door_u.x # get yx coordinates from upper room.door object
+                    self.map[uy][ux] = Rock()
+                else:
+                    self.connect_doors_vertically(rooms[y][x].door_b, rooms[y+1][x].door_u)
+                
+        # connect pairs of doors right to left
+        for y in range(max_y):
+            for x in range(max_x-1):
+                if str(y)+str(x)+str(y)+str(x+1) in skip_these_doors:
+                    # wall up the doors instead
+                    self.map[rooms[y][x].door_r.y][rooms[y][x].door_r.x] = Rock()
+                    self.map[rooms[y][x+1].door_l.y][rooms[y][x+1].door_l.x] = Rock()
+                else:
+                    # connect the doors
+                    self.connect_doors_horizontally(rooms[y][x].door_r, rooms[y][x+1].door_l)
 
             
     def generate_random_rock_map(self):
@@ -353,9 +218,3 @@ class Level():
         self.map[y][x].visible = True
 
 
-    
-    #def remove_monster(self, monster):
-    #    curses.beep()
-    #    self.map[monster.y][monster.x].loot = Item(name = 'corpse', sign = '%')
-    #    self.map[monster.y][monster.x].occupied = False
-    #    self.monsters.remove(monster)
