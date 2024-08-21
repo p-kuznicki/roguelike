@@ -50,7 +50,9 @@ class Level():
 
     def generate_yx_rooms(self, max_y, max_x, skip=None):
     
-        skip_these_doors = skip
+        skip_these_rooms = []
+        for i in range(min(max_y-1, max_x-1)):
+            skip_these_rooms.append(str(random.randint(0,max_y-1))+str(random.randint(0,max_x-1)))
     
         self.fill_the_map(Rock)
         
@@ -76,25 +78,42 @@ class Level():
         # connect pairs of doors bottom to upper       
         for y in range(max_y-1):
             for x in range(max_x):
-                if str(y)+str(x)+str(y+1)+str(x) in skip_these_doors:
+                if (str(y)+str(x) in skip_these_rooms) or (str(y+1)+str(x) in skip_these_rooms):
                     # wall up the doors instead
-                    by, bx = rooms[y][x].door_b.y, rooms[y][x].door_b.x # get yx coordinates from bottom room.door object
+                    by, bx = rooms[y][x].door_b.y, rooms[y][x].door_b.x 
                     self.map[by][bx] = Rock()
-                    uy, ux = rooms[y+1][x].door_u.y, rooms[y+1][x].door_u.x # get yx coordinates from upper room.door object
+                    uy, ux = rooms[y+1][x].door_u.y, rooms[y+1][x].door_u.x 
                     self.map[uy][ux] = Rock()
+                    rooms[y+1][x].door_u, rooms[y][x].door_b = None, None
                 else:
                     self.connect_doors_vertically(rooms[y][x].door_b, rooms[y+1][x].door_u)
                 
         # connect pairs of doors right to left
         for y in range(max_y):
             for x in range(max_x-1):
-                if str(y)+str(x)+str(y)+str(x+1) in skip_these_doors:
+                if (str(y)+str(x) in skip_these_rooms) or (str(y)+str(x+1) in skip_these_rooms):
                     # wall up the doors instead
                     self.map[rooms[y][x].door_r.y][rooms[y][x].door_r.x] = Rock()
                     self.map[rooms[y][x+1].door_l.y][rooms[y][x+1].door_l.x] = Rock()
+                    rooms[y][x+1].door_l, rooms[y][x].door_r = None, None
                 else:
                     # connect the doors
                     self.connect_doors_horizontally(rooms[y][x].door_r, rooms[y][x+1].door_l)
+        
+        rooms_without_doors = []            
+        for y in range(max_y):
+            for room in rooms[y]:
+                if not (room.door_l or room.door_r or room.door_u or room.door_b):
+                    rooms_without_doors.append(room)
+                    
+        for room in rooms_without_doors:
+            for y in range(room.start_y, room.end_y):
+                for x in range(room.start_x, room.end_x):
+                    self.map[y][x] = Rock()
+                    self.special_place = True
+                    
+                    
+                   
 
             
     def generate_random_rock_map(self):

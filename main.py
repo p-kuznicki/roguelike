@@ -30,7 +30,7 @@ def main(stdscr):
     level = Level(height=min_height-2, width=min_width)
     #level.generate_random_rock_map()
 
-    level.generate_yx_rooms(3,5, ["0001","0010","0102", "1213"])
+    level.generate_yx_rooms(3,4)
 
     
     player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)

@@ -10,10 +10,11 @@ class Room():
         self.start_x = ra.randint(x_min+1, x_max-self.width-1)
         self.end_y = self.start_y + self.height
         self.end_x = self.start_x + self.width
-        #self.door_b = None
-        #self.door_u = None
-        #self.door_r = None
-        #self.door_l = None
+        self.door_b = None
+        self.door_u = None
+        self.door_r = None
+        self.door_l = None
+        self.special_place = None
         
 
     
