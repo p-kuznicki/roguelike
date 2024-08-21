@@ -79,6 +79,8 @@ def main(stdscr):
               
         for monster in level.monsters:
             levels[player.depth].hide_this(monster, map_win)
-            monster.action(level, player) 
+            monster.action(level, player)
+            
+        player.regenerate()
                 
 wrapper(main)

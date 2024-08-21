@@ -15,7 +15,12 @@ class Player():
         self.to_hit = to_hit
         self.unarmed = Fists()
         self.defense = defense
+        
         self.hp = hp
+        self.max_hp = hp
+        self.regen_interval = 200/self.max_hp
+        self.regen_counter = 0
+ 
         self.hit = False
         self.message = None
         self.attributes_changed = True
@@ -77,8 +82,17 @@ class Player():
         self.hit=False
         map_win.addch(self.y, self.x, self.sign)
         curses.curs_set(1)
+        
+    def regenerate(self):
+        if self.hp < self.max_hp:
+            self.regen_counter += 1
+            if self.regen_counter >= self.regen_interval:
+                self.hp += 1
+                self.regen_counter -= self.regen_interval
+                self.attributes_changed = True
+        
     
-    # CURRENTLY UNUSED        
+    # DEPRECIATED        
     def get_loot(self, level): 
         if level.map[self.y][self.x].loot and len(self.inventory) >= self.carry_limit:
             self.message = (self.message or "") + "You carry too much!"

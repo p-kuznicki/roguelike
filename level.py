@@ -8,12 +8,12 @@ from items import *
 
 class Level():
 
-    def __init__(self, width, height, density=None):
+    def __init__(self, width, height):
         
         self.name = ''
         self.width = width
         self.height = height
-        self.density = density
+        self.density = 20
         self.map = []
         self.monsters = []
         self.items = []
