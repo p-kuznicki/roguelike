@@ -4,8 +4,8 @@ import random as ra
 
 class Room():
     def __init__(self, y_min,x_min, y_max, x_max):
-        self.height = ra.randint(2, y_max-y_min-2)
-        self.width = ra.randint(2, x_max-x_min-2)
+        self.height = ra.randint(3, y_max-y_min-2)
+        self.width = ra.randint(3, x_max-x_min-2)
         self.start_y = ra.randint(y_min+1, y_max-self.height-1)
         self.start_x = ra.randint(x_min+1, x_max-self.width-1)
         self.end_y = self.start_y + self.height

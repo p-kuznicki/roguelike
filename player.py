@@ -19,9 +19,11 @@ class Player():
         self.hit = False
         self.message = None
         self.attributes_changed = True
+        self.changed_levels = False
         self.attack = self.default_attack
         self.y = None
         self.x = None
+        self.depth = 0
         
         class Equipment():
             def __init__(self, max_items = 1):
@@ -65,6 +67,7 @@ class Player():
             self.y = ny
             self.x = nx
             level.map[self.y][self.x].occupied = self
+            
             
     def bleed(self, map_win):
         curses.curs_set(0)

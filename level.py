@@ -17,6 +17,8 @@ class Level():
         self.map = []
         self.monsters = []
         self.items = []
+        self.stairs_up = None
+        self.stairs_down = None
         
             
     def connect_doors_horizontally(self, door1, door2):
@@ -107,11 +109,34 @@ class Level():
                     rooms_without_doors.append(room)
                     
         for room in rooms_without_doors:
+            room.special_place = "rocks"
             for y in range(room.start_y, room.end_y):
                 for x in range(room.start_x, room.end_x):
                     self.map[y][x] = Rock()
-                    self.special_place = True
                     
+                    
+        while True:
+            room = rooms[random.randint(0,max_y-1)][random.randint(0,max_x-1)]
+            if room.special_place == None:
+                y = (room.start_y + room.end_y)//2
+                x = (room.start_x + room.end_x)//2
+                stairs = Stairs("down", y, x)
+                self.map[y][x] = stairs
+                self.stairs_down = stairs
+                room.special_place = "stairs"
+                break
+                    
+                    
+        while True:
+            room = rooms[random.randint(0,max_y-1)][random.randint(0,max_x-1)]
+            if room.special_place == None:
+                y = (room.start_y + room.end_y)//2
+                x = (room.start_x + room.end_x)//2
+                stairs = Stairs("up", y, x)
+                self.map[y][x] = stairs
+                self.stairs_up = stairs
+                room.special_place = "stairs"
+                break
                     
                    
 
@@ -149,7 +174,7 @@ class Level():
         else: method(y,x,terrain.sign,terrain.color)                      
       
             
-    def draw_all(self, rays, player, map_win):  # CURRENTLY UNUSED, may be useful later
+    def draw_all(self, rays, player, map_win):
     
         for row in self.map:         # reset visibility to False for the whole map            
             for terrain in row: terrain.visible = False
@@ -166,9 +191,9 @@ class Level():
         
         map_win.clear()		
         for y in range(self.height):  #draw whole map
+            map_win.move(y,0)
             for x in range(self.width):
                 self.draw_single(y,x, map_win)
-            map_win.move(y+1,0)
             
     def draw_rectangle_area(self, map_win, height, width):
         for y in range(height):
@@ -224,7 +249,33 @@ class Level():
                 agent.y = y
                 agent.x = x
                 break
+                
+    def go_down(self, player, levels):
+        if player.depth == len(levels)-1:
+            level = Level(self.width, self.height)
+            level.generate_yx_rooms(3,3)
+            levels.append(level)
+        player.depth +=1
+        player.y, player.x = levels[player.depth].stairs_up.y, levels[player.depth].stairs_up.x
+        levels[player.depth].map[player.y][player.x].occupied = player
+        player.attributes_changed = True
+        player.changed_levels = True
+        
+        
+    def go_up(self, player, levels):
+        player.depth -=1
+        if player.depth < 0:
+            return
+        else:
+            player.y, player.x = levels[player.depth].stairs_down.y, levels[player.depth].stairs_down.x
+            levels[player.depth].map[player.y][player.x].occupied = player
+            player.attributes_changed = True
+            player.changed_levels = True
 
+
+            
+        
+    
 
     def is_beyond_map(self, y, x):
         return y < 0 or x < 0 or y >= self.height or x >= self.width

@@ -33,6 +33,22 @@ class Door(Terrain):
         super().__init__(name = 'door', sign = '/', solid=False, color = curses.color_pair(4))
         self.y = y
         self.x = x
-   
-#       def draw_ground(self):
-#            stdscr.addch(self.loot.sign) if self.loot else stdscr.addch(self.sign)
+        
+class Stairs(Terrain):
+    def __init__(self, direction, y, x):
+        self.y = y
+        self.x = x
+        if direction == "down" :
+            self.sign = ">"
+        else:
+            self.sign = "<"
+        
+        super().__init__(name = 'stairs', sign = self.sign, color = curses.color_pair(1))
+     
+        
+    def activate(self, player, levels):
+        if self.sign == ">":
+            levels[player.depth].go_down(player, levels)
+        else: 
+            levels[player.depth].go_up(player, levels)
+        

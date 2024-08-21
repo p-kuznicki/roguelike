@@ -29,8 +29,8 @@ def main(stdscr):
     
     level = Level(height=min_height-2, width=min_width)
     #level.generate_random_rock_map()
-
-    level.generate_yx_rooms(3,4)
+    level.generate_yx_rooms(3,3)
+    levels = [level]
 
     
     player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
@@ -43,8 +43,16 @@ def main(stdscr):
     level_loop = True
     
     while level_loop:
-    
-        level.draw_visible(sight.rays, player, map_win)
+        
+        if player.depth <= -1:
+            level_loop = False
+            break
+        if player.changed_levels :
+            levels[player.depth].draw_all(sight.rays, player, map_win)
+        else:
+            levels[player.depth].draw_visible(sight.rays, player, map_win)
+        
+        
         if player.attributes_changed: status.update_attributes(player, attributes_win)
         if player.message or status.displaying_message: status.update_message(player, message_win)      
         if player.hit: player.bleed(map_win) 
@@ -54,19 +62,23 @@ def main(stdscr):
         if key == 'q':
             level_loop = False
             break
-        elif key == 'w': player.move(level, -1, 0, map_win)
-        elif key == 'a': player.move(level, 0, -1, map_win)
-        elif key == 's': player.move(level, 1, 0, map_win)
-        elif key == 'd': player.move(level, 0, 1, map_win)
-        elif key == 'e': inventory_view.try_to_get_item(map_win, player, level)
-        elif key == 'i':
-            inventory_view.open(map_win, player, level, "Inventory")
+        elif key == "w": player.move(levels[player.depth], -1, 0, map_win)
+        elif key == "a": player.move(levels[player.depth], 0, -1, map_win)
+        elif key == "s": player.move(levels[player.depth], 1, 0, map_win)
+        elif key == "d": player.move(levels[player.depth], 0, 1, map_win)
+        elif key == "e": inventory_view.try_to_get_item(map_win, player, levels[player.depth])
+        elif key == "\n":
+            if hasattr(levels[player.depth].map[player.y][player.x], "activate"):
+                levels[player.depth].map[player.y][player.x].activate(player, levels)
+            continue
+        elif key == "i":
+            inventory_view.open(map_win, player, levels[player.depth], "Inventory")
             continue
         
-        for item in level.items: level.hide_this(item, map_win)
+        for item in levels[player.depth].items: levels[player.depth].hide_this(item, map_win)
               
         for monster in level.monsters:
-            level.hide_this(monster, map_win)
+            levels[player.depth].hide_this(monster, map_win)
             monster.action(level, player) 
                 
 wrapper(main)
