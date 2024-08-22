@@ -4,28 +4,21 @@ from level import Level
 from player import Player
 from sight import Sight
 from status import Status
+from color import initialize_colors
 from inventory_view import Inventory_view
 from helpers import check_terminal_size
 
-min_height = 30
+min_height = 25
 min_width = 80
 
 def main(stdscr):
+
+    initialize_colors()
 
     check_terminal_size(stdscr, min_height, min_width)
     message_win = curses.newwin(1, min_width, 0, 0)
     map_win = curses.newwin(min_height-2, min_width, 1 , 0)
     attributes_win = curses.newwin(1, min_width, min_height-1, 0)
-        
-
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
-    curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(5, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_RED)
-    
     
     level = Level(height=min_height-2, width=min_width)
     #level.generate_random_rock_map()
@@ -49,6 +42,7 @@ def main(stdscr):
             break
         if player.changed_levels :
             levels[player.depth].draw_all(sight.rays, player, map_win)
+            player.changed_levels = False
         else:
             levels[player.depth].draw_visible(sight.rays, player, map_win)
         

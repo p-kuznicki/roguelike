@@ -1,4 +1,5 @@
 import curses
+from color import get_col
 
 class Inventory_view():
     def __init__(self):
@@ -9,8 +10,8 @@ class Inventory_view():
     def display_items(self, item_list, map_win, start_column):
         for y, item in enumerate(item_list):
             map_win.move(y+start_column, 0)
-            for x in range(self.width): map_win.addch(' ', curses.color_pair(3))
-            map_win.addstr(y+start_column, 0, self.index_to_key[y] + ") "+ item.name, curses.color_pair(3))
+            for x in range(self.width): map_win.addch(' ', get_col("black_on_white"))
+            map_win.addstr(y+start_column, 0, self.index_to_key[y] + ") "+ item.name, get_col("black_on_white"))
         curses.curs_set(0)
     
     def get_item(self, item, level, loot, player):
@@ -27,7 +28,7 @@ class Inventory_view():
         elif len(loot) == 1:                            
             self.get_item(loot[0], level, loot, player)
         elif len(loot) > 1:
-            map_win.addstr(0, 0, "Choose item to pick up:", curses.color_pair(3)) 
+            map_win.addstr(0, 0, "Choose item to pick up:", get_col("black_on_white"))
             self.display_items(loot, map_win, start_column=1)
             key = map_win.getkey()
             if key in self.key_to_index and self.key_to_index[key] < len(loot):
@@ -65,9 +66,9 @@ class Inventory_view():
             
         
     def open(self, map_win, player, level, instruction):
-        map_win.addstr(0, 0, instruction, curses.color_pair(3))
-        map_win.addstr(1, 0, "press a-j to (un)equip", curses.color_pair(3))
-        map_win.addstr(2, 0, "press A-J to drop", curses.color_pair(3))
+        map_win.addstr(0, 0, instruction, get_col("black_on_white"))
+        map_win.addstr(1, 0, "press a-j to (un)equip", get_col("black_on_white"))
+        map_win.addstr(2, 0, "press A-J to drop", get_col("black_on_white"))
         self.display_items(player.inventory, map_win, start_column=3)
         key = map_win.getkey()
         if key in self.key_to_index and self.key_to_index[key] < len(player.inventory):

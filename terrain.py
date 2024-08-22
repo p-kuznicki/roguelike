@@ -1,4 +1,5 @@
-import curses
+#import curses
+from color import get_col
 
 class Terrain():
     def __init__(self, name, sign, color, solid=False, discovered=False, visible = False):
@@ -13,24 +14,24 @@ class Terrain():
 
 class Grass(Terrain):
     def __init__(self):
-        super().__init__(name = 'grass', sign = '\"', color = curses.color_pair(2))
+        super().__init__(name = 'grass', sign = '\"', color = get_col("green"))
         
 class Tree(Terrain):
     def __init__(self):
-        super().__init__(name = 'tree', sign = 'T', color = curses.color_pair(2))
+        super().__init__(name = 'tree', sign = 'T', color = get_col("green"))
 
         
 class Rock(Terrain):
     def __init__(self):
-        super().__init__(name = 'rock', sign = '#', color = curses.color_pair(1), solid = False)
+        super().__init__(name = 'rock', sign = '#', color = get_col("white"), solid = True)
         
 class Floor(Terrain):
     def __init__(self):
-        super().__init__(name = 'floor', sign = '.', color = curses.color_pair(1))
+        super().__init__(name = 'floor', sign = '.', color = get_col("white"))
 
 class Door(Terrain):
     def __init__(self, y=None, x=None):
-        super().__init__(name = 'door', sign = '/', solid=False, color = curses.color_pair(4))
+        super().__init__(name = 'door', sign = '/', solid=False, color = get_col("yellow"))
         self.y = y
         self.x = x
         
@@ -43,7 +44,7 @@ class Stairs(Terrain):
         else:
             self.sign = "<"
         
-        super().__init__(name = 'stairs', sign = self.sign, color = curses.color_pair(1))
+        super().__init__(name = 'stairs', sign = self.sign, color = get_col("white"))
      
         
     def activate(self, player, levels):
