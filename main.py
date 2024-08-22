@@ -16,13 +16,13 @@ def main(stdscr):
     initialize_colors()
 
     check_terminal_size(stdscr, min_height, min_width)
-    message_win = curses.newwin(1, min_width, 0, 0)
-    map_win = curses.newwin(min_height-2, min_width, 1 , 0)
+    message_win = curses.newwin(2, min_width, 0, 0)
+    map_win = curses.newwin(min_height-3, min_width, 2 , 0)
     attributes_win = curses.newwin(1, min_width, min_height-1, 0)
     
-    level = Level(height=min_height-2, width=min_width)
-    #level.generate_random_rock_map()
-    level.generate_yx_rooms(3,3)
+    level = Level(height=min_height-3, width=min_width)
+    level.generate_random_rock_map()
+    #level.generate_yx_rooms(3,3)
     levels = [level]
 
     

@@ -2,6 +2,7 @@ import curses
 import random
 import time
 
+from color import get_col
 from items import *
 
 class Player():
@@ -22,10 +23,9 @@ class Player():
         self.regen_counter = 0
  
         self.hit = False
-        self.message = None
+        self.message = []
         self.attributes_changed = True
         self.changed_levels = False
-        self.attack = self.default_attack
         self.y = None
         self.x = None
         self.depth = 0
@@ -44,19 +44,7 @@ class Player():
             "shield_hand": Equipment(),
             "rings": Equipment(max_items=2)}
         
-        
-        
-    # CURRENTLY UNUSED
-    def default_attack(self, monster, level, player=None):   
-        if random.randint(1,100) <= self.to_hit - monster.defense:
-            self.message = (self.message or "") + f" You hit {monster.name}."
-            monster.hp -= random.randint(1, self.damage)
-            if monster.hp <= 0:
-                self.message = (self.message or "") + f" You kill {monster.name}."
-                self.kills += 1
-                self.attributes_changed = True
-                monster.die(level)
-        else: self.message = (self.message or "") + f" You miss {monster.name}."
+
                 
     def move(self, level, y, x, map_win):
         ny = self.y + y
@@ -76,7 +64,7 @@ class Player():
             
     def bleed(self, map_win):
         curses.curs_set(0)
-        map_win.addch(self.y, self.x, self.sign, curses.color_pair(4))
+        map_win.addch(self.y, self.x, self.sign, get_col("red"))
         map_win.refresh()
         time.sleep(0.25)
         self.hit=False

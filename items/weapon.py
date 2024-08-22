@@ -2,6 +2,8 @@ import curses
 import random
 import time
 
+from message import Message
+from color import get_col
 from .item import Item
 
 
@@ -17,16 +19,16 @@ class Weapon(Item):
         
     def hit_and_damage(self, monster, player):
         if random.randint(1,100) <= player.to_hit - monster.defense:
-            player.message = (player.message or "") + f" You hit {monster.name}."
+            player.message.append(Message(f" You hit {monster.name}.", get_col("green")))
             monster.hp -= random.randint(1, self.damage)
             return True
         else:
-            player.message = (player.message or "") + f" You miss {monster.name}."
+            player.message.append(Message(f" You miss {monster.name}.", get_col("white")))
             return False
     
     def death_check(self, level, monster, player):
         if monster.hp <= 0:
-            player.message = (player.message or "") + f"\b and kill it."
+            player.message.append(Message(f"\b and kill it.", get_col("green")))
             player.kills += 1
             player.attributes_changed = True
             monster.die(level)
@@ -47,7 +49,7 @@ class Weapon(Item):
     def hit_animation(self, level, monster, map_win):
         curses.curs_set(0)
         y, x = monster.y, monster.x
-        map_win.addch(y, x, monster.sign, curses.color_pair(4))
+        map_win.addch(y, x, monster.sign, get_col("red"))
         map_win.refresh()
         time.sleep(0.2)
         level.draw_single(y, x, map_win)

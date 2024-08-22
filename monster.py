@@ -1,5 +1,7 @@
 import random, curses
 from items import Corpse
+from message import Message
+from color import get_col
 
 class Monster():
     def __init__(self, name, sign, to_hit, damage, defense, hp):
@@ -46,10 +48,10 @@ class Monster():
                 if random.randint(1, 100) <= self.to_hit - player.defense:
                     damage = random.randint(1, self.damage)
                     player.hp -= damage
-                    player.message = (player.message or "") + f" {self.name} hits you for {damage}."
+                    player.message.append(Message(f" {self.name} hits you for {damage}.", get_col("red")))
                     player.attributes_changed = True
                     player.hit = True
-                else: player.message = (player.message or "") + f" {self.name} misses you."
+                else: player.message.append(Message(f" {self.name} misses you.", get_col("white")))
                 return   	
             
             if level.is_space_unavaible(ny, nx):					# if direct path unavaible try other:
