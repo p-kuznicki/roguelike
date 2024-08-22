@@ -1,3 +1,5 @@
+from color import get_col
+
 class Status():
     def __init__(self, min_width): 
         self.displaying_message = False
@@ -26,8 +28,15 @@ class Status():
         
     def update_attributes(self, player, att_win):
         att_win.clear()
-        att_win.addstr(0,1, f"{player.name} ToHit:{player.to_hit}  DFNS:{player.defense}  \
-HP:{player.hp}/{player.max_hp}  kills:{player.kills} Depth:{player.depth+1}")
+        if player.hp < player.max_hp//3:
+            hp_color = get_col("red")
+        elif player.hp < player.max_hp:
+            hp_color = get_col("yellow")
+        else:
+            hp_color = get_col("white")
+        att_win.addstr(f"{player.name}  HP:")
+        att_win.addstr(f"{player.hp}", hp_color)
+        att_win.addstr(f"/{player.max_hp}  kills:{player.kills} Depth:{player.depth+1}")
         att_win.refresh()
         player.attributes_changed = False
         

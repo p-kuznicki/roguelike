@@ -100,7 +100,7 @@ class Weapon(Item):
             ix = i * direction_x + player.x
             if not level.is_beyond_map(iy,ix) and not level.map[iy][ix].solid:
                 if level.map[iy][ix].occupied:
-                    player.message = (player.message or "") + f" You hit {level.map[iy][ix].occupied.name}."
+                    player.message.append(Message(f" You hit {level.map[iy][ix].occupied.name}.", get_col("green")))
                     level.map[iy][ix].occupied.hp -= random.randint(2,self.damage)
                     self.death_check(level, level.map[iy][ix].occupied, player)
                 map_win.addch(iy,ix,"✦", curses.color_pair(4))

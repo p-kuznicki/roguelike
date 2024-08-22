@@ -11,6 +11,8 @@ class Monster():
         self.damage = damage
         self.defense = defense
         self.hp = hp
+        self.initiative_increment = 150
+        self.current_initiative = 0
         self.y = None
         self.x = None
         
@@ -22,8 +24,12 @@ class Monster():
             level.map[self.y][self.x].occupied = False
         
     def action(self, level, player):
-            if abs(self.x - player.x) + abs(self.y - player.y) > 4: self.move_random(level)
-            else: self.move_closer(level, player)
+            self.current_initiative += self.initiative_increment
+            while self.current_initiative >= player.initiative:
+                if abs(self.x - player.x) + abs(self.y - player.y) > 4: self.move_random(level)
+                else: self.move_closer(level, player)
+                self.current_initiative -= player.initiative
+
 
     def complete_movement(self, level, ny, nx):          
             level.map[self.y][self.x].occupied = False

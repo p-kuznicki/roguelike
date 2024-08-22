@@ -16,6 +16,7 @@ class Player():
         self.to_hit = to_hit
         self.unarmed = Fists()
         self.defense = defense
+        self.initiative = 100
         
         self.hp = hp
         self.max_hp = hp
