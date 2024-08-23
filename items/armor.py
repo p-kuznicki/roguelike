@@ -5,15 +5,15 @@ class Armor(Item):
         super().__init__(name=name, sign="[", category="armor", appropriate_slot=appropriate_slot)
         self.defense = defense
 
-class Iron_Helmet(Armor):
+class IronHelmet(Armor):
     def __init__(self):
         super().__init__(name="iron helmet", defense = 10, appropriate_slot= "head")
 
-class Light_Armor(Armor):
+class LightArmor(Armor):
     def __init__(self):
         super().__init__(name="light armor", defense = 10, appropriate_slot= "body")
         
-class Iron_Shield(Armor):
+class IronShield(Armor):
     def __init__(self):
         super().__init__(name="iron shield", defense = 10, appropriate_slot= "shield_hand")
         

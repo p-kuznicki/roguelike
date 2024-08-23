@@ -75,6 +75,9 @@ def main(stdscr):
             levels[player.depth].hide_this(monster, map_win)
             monster.action(level, player)
             
+        for item in player.inventory:
+             player.try_to_identify(item)
+            
         player.regenerate()
                 
 wrapper(main)

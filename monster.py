@@ -4,11 +4,12 @@ from message import Message
 from color import get_col
 
 class Monster():
-    def __init__(self, name, sign, to_hit, damage, defense, hp):
+    def __init__(self, name, sign, to_hit, min_damage, max_damage, defense, hp):
         self.name = name
         self.sign = sign
         self.to_hit = to_hit
-        self.damage = damage
+        self.min_damage = min_damage
+        self.max_damage = max_damage
         self.defense = defense
         self.hp = hp
         self.initiative_increment = 150
@@ -52,7 +53,7 @@ class Monster():
             
             if ny == player.y and  nx == player.x:      # if tries to go into player - attack
                 if random.randint(1, 100) <= self.to_hit - player.defense:
-                    damage = random.randint(1, self.damage)
+                    damage = random.randint(self.min_damage, self.max_damage)
                     player.hp -= damage
                     player.message.append(Message(f" {self.name} hits you for {damage}.", get_col("red")))
                     player.attributes_changed = True
@@ -73,4 +74,4 @@ class Monster():
 
 class Kobold(Monster):
     def __init__(self):
-        super().__init__(name='kobold', sign='k', to_hit=45, damage=3, defense=0, hp=5)
+        super().__init__(name='kobold', sign='k', to_hit=45, min_damage=1, max_damage=3, defense=0, hp=5)

@@ -1,6 +1,16 @@
 import curses
 from color import get_col
 
+invert = { 
+        "black_on_white": "white",
+        "red_on_white": "red",
+        "green_on_white": "green",
+        "yellow_on_white": "yellow",
+        "blue_on_white": "blue",
+        "magenta_on_white": "magenta",
+        "cyan_on_white": "cyan",
+}
+
 class Inventory_view():
     def __init__(self):
         self.width = 40
@@ -11,7 +21,17 @@ class Inventory_view():
         for y, item in enumerate(item_list):
             map_win.move(y+start_column, 0)
             for x in range(self.width): map_win.addch(' ', get_col("black_on_white"))
-            map_win.addstr(y+start_column, 0, self.index_to_key[y] + ") "+ item.name, get_col("black_on_white"))
+            if item.equipped:
+                color = invert[item.color]
+            else: 
+                color = item.color
+            if item.category == "weapon" and item.identified:
+                name = item.name + f" (dmg:{item.min_damage}-{item.max_damage})"
+            elif item.category == "armor" and item.identified:
+                name = item.name + f" ({item.defense})"
+            else:
+                name = item.name
+            map_win.addstr(y+start_column, 0, self.index_to_key[y] + ") "+ name, get_col(color))
         curses.curs_set(0)
     
     def get_item(self, item, level, loot, player):
@@ -47,7 +67,7 @@ class Inventory_view():
             if item.category == "armor": player.defense = player.defense - item.defense
             if item.special: item.special(player, "off")
             player.attributes_changed = True
-            item.name = item.name[0:-11]  		# remove " (equipped)" from item name
+            #item.name = item.name[0:-11]  		# remove " (equipped)" from item name
             instruction = f"You put away {item.name}."
         elif len(equipment.slot) < equipment.max_items:
             if item.appropriate_slot=="weapon_hand" and item.two_handed: 
@@ -59,7 +79,7 @@ class Inventory_view():
             if item.special: item.special(player, "on")
             player.attributes_changed = True
             instruction = f"You equipped {item.name}."
-            item.name = item.name + " (equipped)"
+            #item.name = item.name + " (equipped)"
         else:
             instruction = "unequip an item first."
         return instruction

@@ -11,7 +11,7 @@ class Player():
         self.name = name
         self.sign = '@'
         self.kills = 0
-        self.inventory= [ShortSword(), MurderMace(), HellfireStaff()]
+        self.inventory= [LightArmor(), ShortSword(), MurderMace(), HellfireStaff()]
         self.carry_limit = 10
         self.to_hit = to_hit
         self.unarmed = Fists()
@@ -79,6 +79,13 @@ class Player():
                 self.hp += 1
                 self.regen_counter -= self.regen_interval
                 self.attributes_changed = True
+                
+    def try_to_identify(self, item):
+        if not item.identified:
+            if random.randint(1,100) <=2:
+                item.identified = True
+                item.name = item.full_name
+                self.message.append(Message(f" You recognize {item.name}.", get_col("green")))
         
     
     # DEPRECIATED        

@@ -1,11 +1,19 @@
+from color import get_col
+
 import random
 
 
 class Item():
-    def __init__(self, name, sign, category=None,  appropriate_slot=None, special=None, usable=False, y=None, x=None):
-        self.name=name
-        self.sign=sign
-        self.category=category
+    def __init__(self, name, sign, full_name = None, identified = False, color = "black_on_white", category=None,  appropriate_slot=None, special=None, usable=False, y=None, x=None):
+        self.name = name
+        if full_name:
+            self.full_name = full_name
+        else:
+            self.full_name = name
+        self.sign = sign
+        self.identified = identified
+        self.color = color
+        self.category = category
         self.appropriate_slot = appropriate_slot
         self.special = special
         self.usable = usable

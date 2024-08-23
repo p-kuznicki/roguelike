@@ -9,9 +9,10 @@ from .item import Item
 
 
 class Weapon(Item):
-    def __init__(self, name, damage, two_handed=False, attack=None, special=None):
-        super().__init__(name=name, sign=")", category="weapon", appropriate_slot="weapon_hand", special=special)
-        self.damage = damage
+    def __init__(self, name,  min_damage, max_damage, color = "black_on_white" , full_name = None, two_handed=False, attack=None, special=None):
+        super().__init__(name=name, full_name=full_name, sign=")", color = color, category="weapon", appropriate_slot="weapon_hand", special=special)
+        self.min_damage = min_damage
+        self.max_damage = max_damage
         self.two_handed = two_handed
         if attack == None: self.attack = self.animated_standard_attack
         else: self.attack = attack
@@ -20,7 +21,7 @@ class Weapon(Item):
     def hit_and_damage(self, monster, player):
         if random.randint(1,100) <= player.to_hit - monster.defense:
             player.message.append(Message(f" You hit {monster.name}.", get_col("green")))
-            monster.hp -= random.randint(1, self.damage)
+            monster.hp -= random.randint(self.min_damage, self.max_damage)
             return True
         else:
             player.message.append(Message(f" You miss {monster.name}.", get_col("white")))
@@ -101,7 +102,7 @@ class Weapon(Item):
             if not level.is_beyond_map(iy,ix) and not level.map[iy][ix].solid:
                 if level.map[iy][ix].occupied:
                     player.message.append(Message(f" You hit {level.map[iy][ix].occupied.name}.", get_col("green")))
-                    level.map[iy][ix].occupied.hp -= random.randint(2,self.damage)
+                    level.map[iy][ix].occupied.hp -= random.randint(self.min_damage,self.max_damage)
                     self.death_check(level, level.map[iy][ix].occupied, player)
                 map_win.addch(iy,ix,"✦", curses.color_pair(4))
                 map_win.refresh()
@@ -121,17 +122,17 @@ class Weapon(Item):
       
 class Fists(Weapon):
     def __init__(self):
-        super().__init__(name="fists", damage = 2)        
+        super().__init__(name="fists", min_damage=1, max_damage=2)        
 
 class ShortSword(Weapon):
     def __init__(self):
-        super().__init__(name="short sword", damage = 6)
+        super().__init__(name="short sword", min_damage=2, max_damage=5)
 
 class HellfireStaff(Weapon):
     def __init__(self):
-        super().__init__(name="hellfire staff", damage = 6, two_handed = True, attack=self.animated_hellfire)
+        super().__init__(name="ram skull staff", full_name="Hellfire Staff",  color="magenta_on_white", min_damage=1, max_damage=7, two_handed = True, attack=self.animated_hellfire)
         
 class MurderMace(Weapon):
     def __init__(self):
-        super().__init__(name="murder mace", damage=3, attack=self.animated_double_strike)
+        super().__init__(name="bloodied mace", full_name="Murder Mace", min_damage=1, max_damage=4, attack=self.animated_double_strike)
 
