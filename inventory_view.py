@@ -64,7 +64,7 @@ class Inventory_view():
             equipment.slot.remove(item)
             if item.appropriate_slot=="weapon_hand" and item.two_handed: player.equipment["shield_hand"].slot.remove(item)
             item.equipped = False
-            if item.category == "armor": player.defense = player.defense - item.defense
+            #if item.category == "armor": player.defense = player.defense - item.defense
             if item.special: item.special(player, "off")
             player.attributes_changed = True
             #item.name = item.name[0:-11]  		# remove " (equipped)" from item name
@@ -75,7 +75,7 @@ class Inventory_view():
                 else: player.equipment["shield_hand"].slot.append(item)
             equipment.slot.append(item)
             item.equipped = True
-            if item.category == "armor": player.defense = player.defense + item.defense
+            #if item.category == "armor": player.defense = player.defense + item.defense
             if item.special: item.special(player, "on")
             player.attributes_changed = True
             instruction = f"You equipped {item.name}."

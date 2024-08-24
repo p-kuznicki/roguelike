@@ -2,25 +2,28 @@ import random, curses
 from items import Corpse
 from message import Message
 from color import get_col
+from helpers import d20
 
 class Monster():
-    def __init__(self, name, sign, to_hit, min_damage, max_damage, defense, hp):
+    def __init__(self, name, sign, hp, min_damage, max_damage,  initiative=100, to_hit=0, defense=0, armor=0):
         self.name = name
         self.sign = sign
         self.to_hit = to_hit
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.defense = defense
+        self.armor = armor
         self.hp = hp
-        self.initiative_increment = 150
+        self.max_hp = hp
+        self.initiative_increment = initiative
         self.current_initiative = 0
         self.y = None
         self.x = None
         
     def die(self, level):
-            new_item = Corpse(name=f"{self.name} corpse", y=self.y, x=self.x)
-            level.map[self.y][self.x].loot.append(new_item)
-            level.items.append(new_item)
+            #new_item = Corpse(name=f"{self.name} corpse", y=self.y, x=self.x)
+            #level.map[self.y][self.x].loot.append(new_item)
+            #level.items.append(new_item)
             level.monsters.remove(self)
             level.map[self.y][self.x].occupied = False
         
@@ -52,12 +55,15 @@ class Monster():
             elif self.y < player.y: ny +=1      # if player has higher y adjust ny by y+1
             
             if ny == player.y and  nx == player.x:      # if tries to go into player - attack
-                if random.randint(1, 100) <= self.to_hit - player.defense:
-                    damage = random.randint(self.min_damage, self.max_damage)
-                    player.hp -= damage
-                    player.message.append(Message(f" {self.name} hits you for {damage}.", get_col("red")))
-                    player.attributes_changed = True
-                    player.hit = True
+                if self.to_hit + d20() >=  player.defense + d20():
+                    damage = random.randint(self.min_damage, self.max_damage) - player.calculate_armor()
+                    if damage > 0:
+                        player.hp -= damage
+                        player.message.append(Message(f" {self.name} hits you for {damage}.", get_col("red")))
+                        player.attributes_changed = True
+                        player.hit = True
+                    else:
+                        player.message.append(Message(f" {self.name} hits you but doesn't manage to wound.", get_col("white")))
                 else: player.message.append(Message(f" {self.name} misses you.", get_col("white")))
                 return   	
             
@@ -74,4 +80,4 @@ class Monster():
 
 class Kobold(Monster):
     def __init__(self):
-        super().__init__(name='kobold', sign='k', to_hit=45, min_damage=1, max_damage=3, defense=0, hp=5)
+        super().__init__(name='kobold', sign='k', hp=5, min_damage=1, max_damage=3 )

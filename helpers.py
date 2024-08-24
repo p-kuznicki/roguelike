@@ -1,3 +1,9 @@
+import random
+
+def d20():
+    return random.randint(1,20)
+
+
 def check_terminal_size(stdscr, min_height, min_width):
     height, width = stdscr.getmaxyx()
     if height < min_height or width < min_width:

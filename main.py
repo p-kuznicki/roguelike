@@ -26,7 +26,7 @@ def main(stdscr):
     levels = [level]
 
     
-    player = Player('Johnny', to_hit=70, base_damage=1, defense=20, hp=25)
+    player = Player('Johnny', to_hit=3, base_damage=1, defense=3, hp=25)
     level.random_place_agent(player)
     status = Status(min_width)
 

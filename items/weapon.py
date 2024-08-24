@@ -5,6 +5,7 @@ import time
 from message import Message
 from color import get_col
 from .item import Item
+from helpers import d20
 
 
 
@@ -19,9 +20,11 @@ class Weapon(Item):
         
         
     def hit_and_damage(self, monster, player):
-        if random.randint(1,100) <= player.to_hit - monster.defense:
+        if player.to_hit + d20() >=  monster.defense + d20():
             player.message.append(Message(f" You hit {monster.name}.", get_col("green")))
-            monster.hp -= random.randint(self.min_damage, self.max_damage)
+            damage = random.randint(self.min_damage, self.max_damage) - monster.armor
+            if damage > 0:
+                monster.hp -= damage 
             return True
         else:
             player.message.append(Message(f" You miss {monster.name}.", get_col("white")))
@@ -34,18 +37,6 @@ class Weapon(Item):
             player.attributes_changed = True
             monster.die(level)
             return True
-    
-    # DEPRECIATED
-    def standard_attack(self, level, monster, player, map_win):
-        self.hit_and_damage(monster, player)
-        self.death_check(level, monster, player)
-
-    # DEPRECIATED    
-    def double_strike(self, level, monster, player, map_win):
-        self.hit_and_damage(monster, player)
-        if not self.death_check(level, monster, player):
-            self.hit_and_damage(monster, player)
-            self.death_check(level, monster, player)
         
     def hit_animation(self, level, monster, map_win):
         curses.curs_set(0)

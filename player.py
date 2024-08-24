@@ -87,6 +87,12 @@ class Player():
                 item.name = item.full_name
                 self.message.append(Message(f" You recognize {item.name}.", get_col("green")))
         
+    def calculate_armor(self):
+        armor = 0
+        for item in self.inventory:
+            if item.equipped and hasattr(item, "armor"):
+                armor += item.armor
+        return armor
     
     # DEPRECIATED        
     def get_loot(self, level): 
