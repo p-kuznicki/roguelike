@@ -93,6 +93,30 @@ class Player():
             if item.equipped and hasattr(item, "armor"):
                 armor += item.armor
         return armor
+        
+    def look_move(self, level, status, map_win, message_win, y, x):
+        map_win.move(y, x)
+        if level.map[y][x].discovered:
+            self.message.append(Message(f"{level.map[y][x].name} ", get_col("white")))
+            if level.map[y][x].visible and level.map[y][x].occupied:
+                self.message.append(Message(f"{level.map[y][x].occupied.name} ", get_col("white")))
+            if level.map[y][x].visible and level.map[y][x].loot:
+                for item in level.map[y][x].loot:
+                    self.message.append(Message(f"{item.name} ", get_col("white")))    
+            status.update_message(self, message_win)
+        else: 
+            self.message.append(Message("Unknown", get_col("white")))
+            status.update_message(self, message_win)
+
+        self.look(level, status, map_win, message_win, y, x)
+        
+    def look(self, level, status, map_win, message_win, y, x):
+        key = map_win.getkey()
+        if key == "w": self.look_move(level, status, map_win, message_win, y-1, x)
+        elif key == "a": self.look_move(level, status, map_win, message_win, y, x-1)
+        elif key == "s": self.look_move(level, status, map_win, message_win, y+1, x)
+        elif key == "d": self.look_move(level, status, map_win, message_win, y, x+1)
+        
     
     # DEPRECIATED        
     def get_loot(self, level): 

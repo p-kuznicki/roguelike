@@ -1,4 +1,6 @@
 import curses
+
+from message import Message
 from color import get_col
 
 invert = { 
@@ -106,9 +108,10 @@ class Inventory_view():
             if item.equipped: self.open(map_win, player, level, "Unequip this item first!!")
             else:
                 level.items.append(item)
+                item.y, item.x = player.y, player.x
                 level.map[player.y][player.x].loot.append(item)
                 player.inventory.remove(item)
-                player.message = (player.message or "") + f"You dropped {item.name}"
+                player.message.append(Message(f"You dropped {item.name}", get_col("white")))
         level.draw_rectangle_area(map_win, len(player.inventory)+4, self.width) # redraw map
         curses.curs_set(1)
         

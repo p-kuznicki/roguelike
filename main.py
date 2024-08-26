@@ -61,6 +61,7 @@ def main(stdscr):
         elif key == "s": player.move(levels[player.depth], 1, 0, map_win)
         elif key == "d": player.move(levels[player.depth], 0, 1, map_win)
         elif key == "e": inventory_view.try_to_get_item(map_win, player, levels[player.depth])
+        elif key == "l": player.look(levels[player.depth], status, map_win, message_win, y=player.y, x=player.x)
         elif key == "\n":
             if hasattr(levels[player.depth].map[player.y][player.x], "activate"):
                 levels[player.depth].map[player.y][player.x].activate(player, levels)
