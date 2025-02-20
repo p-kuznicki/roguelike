@@ -30,7 +30,7 @@ class Inventory_view():
             if item.category == "weapon" and item.identified:
                 name = item.name + f" (dmg:{item.min_damage}-{item.max_damage})"
             elif item.category == "armor" and item.identified:
-                name = item.name + f" ({item.defense})"
+                name = item.name + f" ({item.armor})"
             else:
                 name = item.name
             map_win.addstr(y+start_column, 0, self.index_to_key[y] + ") "+ name, get_col(color))
